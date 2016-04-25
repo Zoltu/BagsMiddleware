@@ -1,21 +1,25 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Mvc.Formatters;
+using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.SwaggerGen;
 
-namespace Templates.ApiApp
+namespace Zoltu.BagsMiddleware
 {
 	public class Startup
 	{
-		public IConfigurationRoot Configuration { get; set; }
+		private IConfigurationRoot _configuration { get; set; }
+		private IHostingEnvironment _hostingEnvironment { get; set; }
 
 		public Startup(IHostingEnvironment hostingEnvironment)
 		{
+			_hostingEnvironment = hostingEnvironment;
 			// Set up configuration sources.
-			Configuration = new ConfigurationBuilder()
+			_configuration = new ConfigurationBuilder()
+				.AddUserSecrets()
 				.AddEnvironmentVariables()
 				.Build();
 		}
@@ -35,6 +39,16 @@ namespace Templates.ApiApp
 			services.AddSwaggerGen();
 			services.ConfigureSwaggerDocument(options => options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.BagsMiddleware" }));
 			services.ConfigureSwaggerSchema(options => options.DescribeAllEnumsAsStrings = true);
+
+			// EntityFramework setup
+			if (_hostingEnvironment.IsDevelopment())
+				services.AddEntityFramework()
+					.AddInMemoryDatabase()
+					.AddDbContext<Models.BagsContext>(options => options.UseInMemoryDatabase());
+			else
+				services.AddEntityFramework()
+					.AddSqlServer()
+					.AddDbContext<Models.BagsContext>(options => options.UseSqlServer(_configuration["SqlServerConnectionString"]));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
