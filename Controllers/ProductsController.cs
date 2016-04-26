@@ -42,7 +42,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("by_tags")]
 		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> expectedTagIds)
 		{
-			Task.WaitAll(_bagsContext.ProductTags.LoadAsync(), _bagsContext.Products.LoadAsync());
+			// FIXME: http://stackoverflow.com/questions/36834629/why-do-i-need-to-call-loadasync-before-querying-over-the-same
+			await _bagsContext.Products.Include(product => product.Tags).LoadAsync();
+
 			return Ok(await _bagsContext.Products
 				.Where(product => expectedTagIds
 					.All(expectedTagId => product.Tags
