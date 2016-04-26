@@ -54,6 +54,8 @@ namespace Zoltu.BagsMiddleware
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
 		{
+			loggerFactory.AddConsole(minLevel: LogLevel.Information);
+
 			applicationBuilder.UseMvc();
 
 			applicationBuilder.UseSwaggerGen();
