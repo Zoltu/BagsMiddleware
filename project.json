@@ -18,7 +18,7 @@
         "Swashbuckle": "6.0.0-rc1-final"
     },
   "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel",
+    "web": "Microsoft.AspNet.Server.Kestrel --ASPNET_ENV development",
     "ef": "EntityFramework.Commands"
   },
   "frameworks": {
