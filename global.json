@@ -1,6 +1,5 @@
 ﻿{
   "sdk": {
-    "version": "1.0.0-rc1-update2",
-    "runtime": "coreclr"
+    "version": "1.0.0-rc1-update2"
   }
 }
