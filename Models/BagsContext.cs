@@ -9,11 +9,6 @@ namespace Zoltu.BagsMiddleware.Models
 		public DbSet<TagCategory> TagCategories { get; set; }
 		public DbSet<ProductTag> ProductTags { get; set; }
 
-		public BagsContext()
-		{
-			Database.EnsureCreated();
-		}
-
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			// unique constraint on tag name & category

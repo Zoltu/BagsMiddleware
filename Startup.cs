@@ -66,6 +66,14 @@ namespace Zoltu.BagsMiddleware
 
 			applicationBuilder.UseSwaggerGen();
 			applicationBuilder.UseSwaggerUi();
+
+			// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
+			var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+			using (var serviceScope = serviceScopeFactory.CreateScope())
+			{
+				var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
+				dbContext.Database.EnsureCreated();
+			}
 		}
 
 		// Entry point for the application.
