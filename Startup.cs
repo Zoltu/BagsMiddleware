@@ -20,6 +20,7 @@ namespace Zoltu.BagsMiddleware
 			// Set up configuration sources.
 			_configuration = new ConfigurationBuilder()
 				.AddUserSecrets()
+				.AddApplicationInsightsSettings(developerMode: _hostingEnvironment.IsDevelopment())
 				.AddEnvironmentVariables()
 				.Build();
 		}
@@ -27,6 +28,9 @@ namespace Zoltu.BagsMiddleware
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// monitoring setup
+			services.AddApplicationInsightsTelemetry(_configuration);
+
 			// MVC setup
 			services.AddMvc(options =>
 			{
@@ -56,6 +60,8 @@ namespace Zoltu.BagsMiddleware
 		{
 			loggerFactory.AddConsole(minLevel: LogLevel.Information);
 
+			applicationBuilder.UseApplicationInsightsRequestTelemetry();
+			applicationBuilder.UseApplicationInsightsExceptionTelemetry();
 			applicationBuilder.UseMvc();
 
 			applicationBuilder.UseSwaggerGen();
