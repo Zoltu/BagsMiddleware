@@ -65,24 +65,6 @@
           "lib/dnx451/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -144,6 +126,25 @@
           "lib/dnx451/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "frameworkAssemblies": [
@@ -157,7 +158,7 @@
           "lib/net45/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "compile": {
           "lib/net45/Microsoft.ApplicationInsights.dll": {}
@@ -175,17 +176,20 @@
           "lib/net45/Microsoft.AI.Agent.Intercept.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
-          "Microsoft.ApplicationInsights.DependencyCollector": "2.0.0",
-          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.DependencyCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+          "Microsoft.Diagnostics.Tracing.EventSource.Redist": "1.1.28",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
         },
@@ -202,10 +206,10 @@
           "lib/dnx451/Microsoft.ApplicationInsights.AspNet.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.DependencyCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.DependencyCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]",
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]",
           "Microsoft.ApplicationInsights.Agent.Intercept": "1.2.1"
         },
         "compile": {
@@ -215,16 +219,28 @@
           "lib/net45/Microsoft.AI.DependencyCollector.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PerfCounterCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.PerfCounterCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]"
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
         },
         "compile": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
         },
         "runtime": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
+        }
+      },
+      "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel/2.1.0-beta3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
         }
       },
       "Microsoft.AspNet.Antiforgery/1.0.0-rc1-final": {
@@ -1046,6 +1062,34 @@
           "lib/net45/Microsoft.CodeAnalysis.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Data"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        }
+      },
+      "Microsoft.Diagnostics.Tracing.EventSource.Redist/1.1.28": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -1248,6 +1292,26 @@
         },
         "runtime": {
           "lib/net451/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -1893,18 +1957,6 @@
           "lib/dotnet5.4/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "compile": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -1950,6 +2002,21 @@
           "lib/dnxcore50/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final",
+          "System.IO.FileSystem": "4.0.1-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "compile": {
@@ -1959,7 +2026,7 @@
           "lib/portable-windows8+net45+wp8/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -1989,17 +2056,19 @@
           "lib/dotnet5.4/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+          "System.AppContext": "4.0.1-beta-23516",
           "System.Net.NameResolution": "4.0.0-beta-23302",
           "System.Reflection": "4.0.10-beta-23109"
         },
@@ -2739,6 +2808,32 @@
           "lib/dotnet5.4/Microsoft.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.0.11-beta-23516",
+          "System.ComponentModel": "4.0.1-beta-23516",
+          "System.Data.Common": "4.0.1-beta-23516",
+          "System.Diagnostics.Debug": "4.0.11-beta-23516",
+          "System.Globalization": "4.0.11-beta-23516",
+          "System.IO.FileSystem": "4.0.1-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Reflection": "4.1.0-beta-23516",
+          "System.Resources.ResourceManager": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Runtime.Extensions": "4.0.11-beta-23516",
+          "System.Runtime.Handles": "4.0.1-beta-23516",
+          "System.Runtime.InteropServices": "4.0.21-beta-23516",
+          "System.Text.Encoding": "4.0.11-beta-23516",
+          "System.Threading.Tasks": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -2893,6 +2988,21 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6",
+          "System.Dynamic.Runtime": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -3300,13 +3410,13 @@
           "lib/dnxcore50/Swashbuckle.SwaggerUi.dll": {}
         }
       },
-      "System.AppContext/4.0.0": {
+      "System.AppContext/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0"
         },
         "compile": {
-          "ref/dotnet/System.AppContext.dll": {}
+          "ref/dotnet5.1/System.AppContext.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.AppContext.dll": {}
@@ -3835,7 +3945,7 @@
           "ref/dnxcore50/_._": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -3843,7 +3953,7 @@
           "System.Runtime": "4.0.20"
         },
         "compile": {
-          "ref/dotnet/System.Reflection.dll": {}
+          "ref/dotnet5.4/System.Reflection.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Reflection.dll": {}
@@ -4430,24 +4540,6 @@
           "lib/dnx451/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -4509,6 +4601,25 @@
           "lib/dnx451/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "frameworkAssemblies": [
@@ -4522,7 +4633,7 @@
           "lib/net45/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "compile": {
           "lib/net45/Microsoft.ApplicationInsights.dll": {}
@@ -4540,17 +4651,20 @@
           "lib/net45/Microsoft.AI.Agent.Intercept.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
-          "Microsoft.ApplicationInsights.DependencyCollector": "2.0.0",
-          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.DependencyCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+          "Microsoft.Diagnostics.Tracing.EventSource.Redist": "1.1.28",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
         },
@@ -4567,10 +4681,10 @@
           "lib/dnx451/Microsoft.ApplicationInsights.AspNet.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.DependencyCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.DependencyCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]",
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]",
           "Microsoft.ApplicationInsights.Agent.Intercept": "1.2.1"
         },
         "compile": {
@@ -4580,16 +4694,28 @@
           "lib/net45/Microsoft.AI.DependencyCollector.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PerfCounterCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.PerfCounterCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]"
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
         },
         "compile": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
         },
         "runtime": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
+        }
+      },
+      "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel/2.1.0-beta3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
         }
       },
       "Microsoft.AspNet.Antiforgery/1.0.0-rc1-final": {
@@ -5414,6 +5540,37 @@
           "lib/net45/Microsoft.CodeAnalysis.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Data"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        },
+        "native": {
+          "runtimes/win7-x86/native/sqlite3.dll": {}
+        }
+      },
+      "Microsoft.Diagnostics.Tracing.EventSource.Redist/1.1.28": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -5616,6 +5773,26 @@
         },
         "runtime": {
           "lib/net451/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -6270,24 +6447,6 @@
           "lib/dnx451/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/net451/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -6349,6 +6508,25 @@
           "lib/dnx451/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "frameworkAssemblies": [
@@ -6362,7 +6540,7 @@
           "lib/net45/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "compile": {
           "lib/net45/Microsoft.ApplicationInsights.dll": {}
@@ -6380,17 +6558,20 @@
           "lib/net45/Microsoft.AI.Agent.Intercept.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
-          "Microsoft.ApplicationInsights.DependencyCollector": "2.0.0",
-          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.DependencyCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.PerfCounterCollector": "2.1.0-beta3",
+          "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+          "Microsoft.Diagnostics.Tracing.EventSource.Redist": "1.1.28",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
         },
@@ -6407,10 +6588,10 @@
           "lib/dnx451/Microsoft.ApplicationInsights.AspNet.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.DependencyCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.DependencyCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]",
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]",
           "Microsoft.ApplicationInsights.Agent.Intercept": "1.2.1"
         },
         "compile": {
@@ -6420,16 +6601,28 @@
           "lib/net45/Microsoft.AI.DependencyCollector.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.PerfCounterCollector/2.0.0": {
+      "Microsoft.ApplicationInsights.PerfCounterCollector/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "[2.0.0]"
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
         },
         "compile": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
         },
         "runtime": {
           "lib/net45/Microsoft.AI.PerfCounterCollector.dll": {}
+        }
+      },
+      "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel/2.1.0-beta3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ApplicationInsights": "[2.1.0-beta3]"
+        },
+        "compile": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
         }
       },
       "Microsoft.AspNet.Antiforgery/1.0.0-rc1-final": {
@@ -7254,6 +7447,37 @@
           "lib/net45/Microsoft.CodeAnalysis.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core",
+          "System.Data"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Data.Sqlite.dll": {}
+        },
+        "native": {
+          "runtimes/win7-x64/native/sqlite3.dll": {}
+        }
+      },
+      "Microsoft.Diagnostics.Tracing.EventSource.Redist/1.1.28": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -7456,6 +7680,26 @@
         },
         "runtime": {
           "lib/net451/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -8101,18 +8345,6 @@
           "lib/dotnet5.4/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "compile": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -8158,6 +8390,21 @@
           "lib/dnxcore50/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final",
+          "System.IO.FileSystem": "4.0.1-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "compile": {
@@ -8167,7 +8414,7 @@
           "lib/portable-windows8+net45+wp8/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -8197,17 +8444,19 @@
           "lib/dotnet5.4/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+          "System.AppContext": "4.0.1-beta-23516",
           "System.Net.NameResolution": "4.0.0-beta-23302",
           "System.Reflection": "4.0.10-beta-23109"
         },
@@ -8950,6 +9199,35 @@
           "lib/dotnet5.4/Microsoft.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.0.11-beta-23516",
+          "System.ComponentModel": "4.0.1-beta-23516",
+          "System.Data.Common": "4.0.1-beta-23516",
+          "System.Diagnostics.Debug": "4.0.11-beta-23516",
+          "System.Globalization": "4.0.11-beta-23516",
+          "System.IO.FileSystem": "4.0.1-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Reflection": "4.1.0-beta-23516",
+          "System.Resources.ResourceManager": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Runtime.Extensions": "4.0.11-beta-23516",
+          "System.Runtime.Handles": "4.0.1-beta-23516",
+          "System.Runtime.InteropServices": "4.0.21-beta-23516",
+          "System.Text.Encoding": "4.0.11-beta-23516",
+          "System.Threading.Tasks": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        },
+        "native": {
+          "runtimes/win7-x86/native/sqlite3.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -9104,6 +9382,21 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6",
+          "System.Dynamic.Runtime": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -9837,13 +10130,13 @@
           "lib/dnxcore50/Swashbuckle.SwaggerUi.dll": {}
         }
       },
-      "System.AppContext/4.0.0": {
+      "System.AppContext/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0"
         },
         "compile": {
-          "ref/dotnet/System.AppContext.dll": {}
+          "ref/dotnet5.1/System.AppContext.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.AppContext.dll": {}
@@ -10464,7 +10757,7 @@
           "ref/dnxcore50/_._": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -10472,7 +10765,7 @@
           "System.Runtime": "4.0.20"
         },
         "compile": {
-          "ref/dotnet/System.Reflection.dll": {}
+          "ref/dotnet5.4/System.Reflection.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Reflection.dll": {}
@@ -11121,18 +11414,6 @@
           "lib/dotnet5.4/EntityFramework.Core.dll": {}
         }
       },
-      "EntityFramework.InMemory/7.0.0-rc1-final": {
-        "type": "package",
-        "dependencies": {
-          "EntityFramework.Core": "7.0.0-rc1-final"
-        },
-        "compile": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/EntityFramework.InMemory.dll": {}
-        }
-      },
       "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -11178,6 +11459,21 @@
           "lib/dnxcore50/EntityFramework.Relational.Design.dll": {}
         }
       },
+      "EntityFramework.Sqlite/7.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "EntityFramework.Relational": "7.0.0-rc1-final",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Data.Sqlite": "1.0.0-rc1-final",
+          "System.IO.FileSystem": "4.0.1-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/EntityFramework.Sqlite.dll": {}
+        }
+      },
       "Ix-Async/1.2.5": {
         "type": "package",
         "compile": {
@@ -11187,7 +11483,7 @@
           "lib/portable-windows8+net45+wp8/System.Interactive.Async.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights/2.0.0": {
+      "Microsoft.ApplicationInsights/2.1.0-beta3": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -11217,17 +11513,19 @@
           "lib/dotnet5.4/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+      "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
         "type": "package",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.0.0",
+          "Microsoft.ApplicationInsights": "2.1.0-beta3",
           "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
           "Microsoft.AspNet.Http.Features": "1.0.0-rc1-final",
           "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
           "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.json": "1.0.0-rc1-final",
           "Microsoft.Extensions.DiagnosticAdapter": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+          "System.AppContext": "4.0.1-beta-23516",
           "System.Net.NameResolution": "4.0.0-beta-23302",
           "System.Reflection": "4.0.10-beta-23109"
         },
@@ -11970,6 +12268,35 @@
           "lib/dotnet5.4/Microsoft.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.0.11-beta-23516",
+          "System.ComponentModel": "4.0.1-beta-23516",
+          "System.Data.Common": "4.0.1-beta-23516",
+          "System.Diagnostics.Debug": "4.0.11-beta-23516",
+          "System.Globalization": "4.0.11-beta-23516",
+          "System.IO.FileSystem": "4.0.1-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Reflection": "4.1.0-beta-23516",
+          "System.Resources.ResourceManager": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Runtime.Extensions": "4.0.11-beta-23516",
+          "System.Runtime.Handles": "4.0.1-beta-23516",
+          "System.Runtime.InteropServices": "4.0.21-beta-23516",
+          "System.Text.Encoding": "4.0.11-beta-23516",
+          "System.Threading.Tasks": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Data.Sqlite.dll": {}
+        },
+        "native": {
+          "runtimes/win7-x64/native/sqlite3.dll": {}
+        }
+      },
       "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -12124,6 +12451,21 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.Configuration.FileExtensions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "6.0.6",
+          "System.Dynamic.Runtime": "4.0.11-beta-23516"
+        },
+        "compile": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
       "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -12857,13 +13199,13 @@
           "lib/dnxcore50/Swashbuckle.SwaggerUi.dll": {}
         }
       },
-      "System.AppContext/4.0.0": {
+      "System.AppContext/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0"
         },
         "compile": {
-          "ref/dotnet/System.AppContext.dll": {}
+          "ref/dotnet5.1/System.AppContext.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.AppContext.dll": {}
@@ -13484,7 +13826,7 @@
           "ref/dnxcore50/_._": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23516": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -13492,7 +13834,7 @@
           "System.Runtime": "4.0.20"
         },
         "compile": {
-          "ref/dotnet/System.Reflection.dll": {}
+          "ref/dotnet5.4/System.Reflection.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Reflection.dll": {}
@@ -14134,22 +14476,6 @@
         "lib/netcore50/EntityFramework.Core.xml"
       ]
     },
-    "EntityFramework.InMemory/7.0.0-rc1-final": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "KEj27C9e/SdD/WSyzGQsjGjyKuYlRHSEcnMV8FiN/Soyu/7tulTu7YRaH4QZR95IUHNDrKFpNAkr3CcCJYKFpQ==",
-      "files": [
-        "EntityFramework.InMemory.7.0.0-rc1-final.nupkg",
-        "EntityFramework.InMemory.7.0.0-rc1-final.nupkg.sha512",
-        "EntityFramework.InMemory.nuspec",
-        "lib/dotnet5.4/EntityFramework.InMemory.dll",
-        "lib/dotnet5.4/EntityFramework.InMemory.xml",
-        "lib/net451/EntityFramework.InMemory.dll",
-        "lib/net451/EntityFramework.InMemory.xml",
-        "lib/netcore50/EntityFramework.InMemory.dll",
-        "lib/netcore50/EntityFramework.InMemory.xml"
-      ]
-    },
     "EntityFramework.MicrosoftSqlServer/7.0.0-rc1-final": {
       "type": "package",
       "serviceable": true,
@@ -14200,6 +14526,22 @@
         "lib/netcore50/_._"
       ]
     },
+    "EntityFramework.Sqlite/7.0.0-rc1-final": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "B+h4HHUnCSN/d4DIxW89B6q4efcZzQjajQb1yrlALEeZuCBDIzO0nrEdRZsRSNqJaNzmxRu/OsYqrZVOORUrGw==",
+      "files": [
+        "EntityFramework.Sqlite.7.0.0-rc1-final.nupkg",
+        "EntityFramework.Sqlite.7.0.0-rc1-final.nupkg.sha512",
+        "EntityFramework.Sqlite.nuspec",
+        "lib/dotnet5.4/EntityFramework.Sqlite.dll",
+        "lib/dotnet5.4/EntityFramework.Sqlite.xml",
+        "lib/net451/EntityFramework.Sqlite.dll",
+        "lib/net451/EntityFramework.Sqlite.xml",
+        "lib/netcore50/EntityFramework.Sqlite.dll",
+        "lib/netcore50/EntityFramework.Sqlite.xml"
+      ]
+    },
     "Ix-Async/1.2.5": {
       "type": "package",
       "sha512": "8EXO8q7cpDUH9G2q+UOPOO/6uZ9aN7mx/4xjFIfkp+qLWVJiYuglkRhjY8Ggs2CucXzHR8GHnovJKB5yQoYaJg==",
@@ -14215,9 +14557,9 @@
         "lib/portable-windows8+net45+wp8/System.Interactive.Async.XML"
       ]
     },
-    "Microsoft.ApplicationInsights/2.0.0": {
+    "Microsoft.ApplicationInsights/2.1.0-beta3": {
       "type": "package",
-      "sha512": "xz5CN3ZxR4LEiFctDuZu47MKtGig+yfR6XsZc1aUz4puV6GhlLR7HDYRfDRQH+q2XXYGvh+BThdHbaF5RiXE/w==",
+      "sha512": "DIycgWuo44enRddb5M8/0PZRM9FG3w5DOpNj/vraCY7UI/XmmYLy6Gq38B6weZk8NN1dBlBdxOlV3siKFlbS3Q==",
       "files": [
         "lib/dotnet5.4/Microsoft.ApplicationInsights.dll",
         "lib/dotnet5.4/Microsoft.ApplicationInsights.XML",
@@ -14227,8 +14569,11 @@
         "lib/net45/Microsoft.ApplicationInsights.XML",
         "lib/net46/Microsoft.ApplicationInsights.dll",
         "lib/net46/Microsoft.ApplicationInsights.XML",
-        "Microsoft.ApplicationInsights.2.0.0.nupkg",
-        "Microsoft.ApplicationInsights.2.0.0.nupkg.sha512",
+        "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll",
+        "lib/uap10.0/Microsoft.ApplicationInsights.dll",
+        "lib/wp8/Microsoft.ApplicationInsights.dll",
+        "Microsoft.ApplicationInsights.2.1.0-beta3.nupkg",
+        "Microsoft.ApplicationInsights.2.1.0-beta3.nupkg.sha512",
         "Microsoft.ApplicationInsights.nuspec"
       ]
     },
@@ -14243,22 +14588,22 @@
         "Microsoft.ApplicationInsights.Agent.Intercept.nuspec"
       ]
     },
-    "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update3": {
+    "Microsoft.ApplicationInsights.AspNet/1.0.0-rc1-update4": {
       "type": "package",
-      "sha512": "cV5EFesO1fBKo3OylcyCR5imRD5BcXfGKB/0oqyDmsf3bU/ALqcNnJdPkR6iy0KfxgbXe8/PsaKn/rkoK4CZKQ==",
+      "sha512": "GltMThmrM1hZXNNGDSuxI/LzEj6DhcCzhrfbXQ/8OEGZ3SokEGd2nMl3s5VvHz9hsj6VSanahhhT/O0l47hqKQ==",
       "files": [
         "lib/dnx451/Microsoft.ApplicationInsights.AspNet.dll",
         "lib/dnx451/Microsoft.ApplicationInsights.AspNet.xml",
         "lib/dnxcore50/Microsoft.ApplicationInsights.AspNet.dll",
         "lib/dnxcore50/Microsoft.ApplicationInsights.AspNet.xml",
-        "Microsoft.ApplicationInsights.AspNet.1.0.0-rc1-update3.nupkg",
-        "Microsoft.ApplicationInsights.AspNet.1.0.0-rc1-update3.nupkg.sha512",
+        "Microsoft.ApplicationInsights.AspNet.1.0.0-rc1-update4.nupkg",
+        "Microsoft.ApplicationInsights.AspNet.1.0.0-rc1-update4.nupkg.sha512",
         "Microsoft.ApplicationInsights.AspNet.nuspec"
       ]
     },
-    "Microsoft.ApplicationInsights.DependencyCollector/2.0.0": {
+    "Microsoft.ApplicationInsights.DependencyCollector/2.1.0-beta3": {
       "type": "package",
-      "sha512": "QGbcoloQ+FcZEhktjs/ZPKKBbwQXVtNkqsb+SHnBq8JWb9o5kpL3+g39VnAKA6uW2scaVKVOiAoTYFUb8lFkoA==",
+      "sha512": "izWgPUZ4Lt4ARUlOkYWttNu+i7X6gPYYyD6yUIrjUca9T/3YQm0fzgZ+HYQD8bh3pKnvuUcxpYyaUlABoFfTgg==",
       "files": [
         "content/ApplicationInsights.config.install.xdt",
         "content/ApplicationInsights.config.transform",
@@ -14267,23 +14612,39 @@
         "lib/net40/Microsoft.AI.DependencyCollector.XML",
         "lib/net45/Microsoft.AI.DependencyCollector.dll",
         "lib/net45/Microsoft.AI.DependencyCollector.XML",
-        "Microsoft.ApplicationInsights.DependencyCollector.2.0.0.nupkg",
-        "Microsoft.ApplicationInsights.DependencyCollector.2.0.0.nupkg.sha512",
+        "Microsoft.ApplicationInsights.DependencyCollector.2.1.0-beta3.nupkg",
+        "Microsoft.ApplicationInsights.DependencyCollector.2.1.0-beta3.nupkg.sha512",
         "Microsoft.ApplicationInsights.DependencyCollector.nuspec"
       ]
     },
-    "Microsoft.ApplicationInsights.PerfCounterCollector/2.0.0": {
+    "Microsoft.ApplicationInsights.PerfCounterCollector/2.1.0-beta3": {
       "type": "package",
-      "sha512": "uaaUmciBoNxQUEWzkjTjKLqJ+G1f3IFVERCn+NcHkEZmP6FhBjwgBq8HhsR8ba2kEP0awIucH3fg2LyJ2ykU+A==",
+      "sha512": "3Lo3DDs0kWO2mzxETwkQ2+MF5UiNVphjlPym0L/BnVpzF3VIA9kcbSI/VJBCXnVlBw2BJ0kiufuQ4Bh8qLLf5g==",
       "files": [
         "content/ApplicationInsights.config.install.xdt",
         "content/ApplicationInsights.config.transform",
         "content/ApplicationInsights.config.uninstall.xdt",
         "lib/net40/Microsoft.AI.PerfCounterCollector.dll",
         "lib/net45/Microsoft.AI.PerfCounterCollector.dll",
-        "Microsoft.ApplicationInsights.PerfCounterCollector.2.0.0.nupkg",
-        "Microsoft.ApplicationInsights.PerfCounterCollector.2.0.0.nupkg.sha512",
+        "Microsoft.ApplicationInsights.PerfCounterCollector.2.1.0-beta3.nupkg",
+        "Microsoft.ApplicationInsights.PerfCounterCollector.2.1.0-beta3.nupkg.sha512",
         "Microsoft.ApplicationInsights.PerfCounterCollector.nuspec"
+      ]
+    },
+    "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel/2.1.0-beta3": {
+      "type": "package",
+      "sha512": "pkaPmNcAwdbzrbaXZHoNV7WvctCb6TPB+aLrS/4yPcrhLaIR/wBWX4Bctr4wBNT1few5lUB2BU9CEQFbvMea2g==",
+      "files": [
+        "content/ApplicationInsights.config.install.xdt",
+        "content/ApplicationInsights.config.transform",
+        "content/ApplicationInsights.config.uninstall.xdt",
+        "lib/net40/Microsoft.AI.ServerTelemetryChannel.dll",
+        "lib/net40/Microsoft.AI.ServerTelemetryChannel.XML",
+        "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll",
+        "lib/net45/Microsoft.AI.ServerTelemetryChannel.XML",
+        "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.1.0-beta3.nupkg",
+        "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.1.0-beta3.nupkg.sha512",
+        "Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.nuspec"
       ]
     },
     "Microsoft.AspNet.Antiforgery/1.0.0-rc1-final": {
@@ -14939,6 +15300,48 @@
         "ref/xamarinmac20/_._"
       ]
     },
+    "Microsoft.Data.Sqlite/1.0.0-rc1-final": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "54F32OBWIWMIpeKggCMEX+Bp/TiAiKzBaQ4z+IRr61eNSnJhxMnLE/QWDs5YbCtbDlWIB4+VBC1rnT8PFGCtdw==",
+      "files": [
+        "build/net451/Microsoft.Data.Sqlite.props",
+        "build/netcore50/Microsoft.Data.Sqlite.targets",
+        "build/netcore50/win10-arm/native/sqlite3.dll",
+        "build/netcore50/win10-x64/native/sqlite3.dll",
+        "build/netcore50/win10-x86/native/sqlite3.dll",
+        "lib/dotnet5.4/Microsoft.Data.Sqlite.dll",
+        "lib/dotnet5.4/Microsoft.Data.Sqlite.xml",
+        "lib/net451/Microsoft.Data.Sqlite.dll",
+        "lib/net451/Microsoft.Data.Sqlite.xml",
+        "lib/netcore50/Microsoft.Data.Sqlite.dll",
+        "lib/netcore50/Microsoft.Data.Sqlite.xml",
+        "Microsoft.Data.Sqlite.1.0.0-rc1-final.nupkg",
+        "Microsoft.Data.Sqlite.1.0.0-rc1-final.nupkg.sha512",
+        "Microsoft.Data.Sqlite.nuspec",
+        "runtimes/win7-x64/native/sqlite3.dll",
+        "runtimes/win7-x86/native/sqlite3.dll"
+      ]
+    },
+    "Microsoft.Diagnostics.Tracing.EventSource.Redist/1.1.28": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "pn07chRDMdeug9sHbuNlAEZG8ZN3zKgE07IMJG7qPeoQlX6ve01rKTwknKCY/2CVacRP78ONzykV8am84gxc2g==",
+      "files": [
+        "lib/net35/Microsoft.Diagnostics.Tracing.EventSource.dll",
+        "lib/net35/Microsoft.Diagnostics.Tracing.EventSource.XML",
+        "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.dll",
+        "lib/net40/Microsoft.Diagnostics.Tracing.EventSource.XML",
+        "lib/net46/Microsoft.Diagnostics.Tracing.EventSource.dll",
+        "lib/net46/Microsoft.Diagnostics.Tracing.EventSource.XML",
+        "lib/portable-win8+wpa81/Microsoft.Diagnostics.Tracing.EventSource.dll",
+        "lib/portable-win8+wpa81/Microsoft.Diagnostics.Tracing.EventSource.XML",
+        "License-Stable.rtf",
+        "Microsoft.Diagnostics.Tracing.EventSource.Redist.1.1.28.nupkg",
+        "Microsoft.Diagnostics.Tracing.EventSource.Redist.1.1.28.nupkg.sha512",
+        "Microsoft.Diagnostics.Tracing.EventSource.Redist.nuspec"
+      ]
+    },
     "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
       "type": "package",
       "serviceable": true,
@@ -15107,6 +15510,22 @@
         "Microsoft.Extensions.Configuration.FileExtensions.1.0.0-rc1-final.nupkg",
         "Microsoft.Extensions.Configuration.FileExtensions.1.0.0-rc1-final.nupkg.sha512",
         "Microsoft.Extensions.Configuration.FileExtensions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Configuration.json/1.0.0-rc1-final": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "9v+RpswnXEpAP5mx8J1w1yZZT2pPtMBTnOAauNh2c9ju5Dhq3ljxvbm0S9j6o5F/EFSLlbfN/brxTJN3qa/upw==",
+      "files": [
+        "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.dll",
+        "lib/dotnet5.4/Microsoft.Extensions.Configuration.Json.xml",
+        "lib/net451/Microsoft.Extensions.Configuration.Json.dll",
+        "lib/net451/Microsoft.Extensions.Configuration.Json.xml",
+        "lib/netcore50/Microsoft.Extensions.Configuration.Json.dll",
+        "lib/netcore50/Microsoft.Extensions.Configuration.Json.xml",
+        "Microsoft.Extensions.Configuration.Json.1.0.0-rc1-final.nupkg",
+        "Microsoft.Extensions.Configuration.Json.1.0.0-rc1-final.nupkg.sha512",
+        "Microsoft.Extensions.Configuration.Json.nuspec"
       ]
     },
     "Microsoft.Extensions.Configuration.Json/1.0.0-rc1-final": {
@@ -15781,10 +16200,10 @@
         "Swashbuckle.SwaggerUi.nuspec"
       ]
     },
-    "System.AppContext/4.0.0": {
+    "System.AppContext/4.0.1-beta-23516": {
       "type": "package",
       "serviceable": true,
-      "sha512": "gUoYgAWDC3+xhKeU5KSLbYDhTdBYk9GssrMSCcWUADzOglW+s0AmwVhOUGt2tL5xUl7ZXoYTPdA88zCgKrlG0A==",
+      "sha512": "5xHkTfjYOOsw3oTcl1HrTj/ays+49IQAgZ6ZStJVwn197mm2ml7PuHCJ4fzk5rZONZZTkwT3Os20WproAp2/3g==",
       "files": [
         "lib/DNXCore50/System.AppContext.dll",
         "lib/MonoAndroid10/_._",
@@ -15793,24 +16212,24 @@
         "lib/netcore50/System.AppContext.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet/de/System.AppContext.xml",
-        "ref/dotnet/es/System.AppContext.xml",
-        "ref/dotnet/fr/System.AppContext.xml",
-        "ref/dotnet/it/System.AppContext.xml",
-        "ref/dotnet/ja/System.AppContext.xml",
-        "ref/dotnet/ko/System.AppContext.xml",
-        "ref/dotnet/ru/System.AppContext.xml",
-        "ref/dotnet/System.AppContext.dll",
-        "ref/dotnet/System.AppContext.xml",
-        "ref/dotnet/zh-hans/System.AppContext.xml",
-        "ref/dotnet/zh-hant/System.AppContext.xml",
+        "ref/dotnet5.1/de/System.AppContext.xml",
+        "ref/dotnet5.1/es/System.AppContext.xml",
+        "ref/dotnet5.1/fr/System.AppContext.xml",
+        "ref/dotnet5.1/it/System.AppContext.xml",
+        "ref/dotnet5.1/ja/System.AppContext.xml",
+        "ref/dotnet5.1/ko/System.AppContext.xml",
+        "ref/dotnet5.1/ru/System.AppContext.xml",
+        "ref/dotnet5.1/System.AppContext.dll",
+        "ref/dotnet5.1/System.AppContext.xml",
+        "ref/dotnet5.1/zh-hans/System.AppContext.xml",
+        "ref/dotnet5.1/zh-hant/System.AppContext.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/System.AppContext.dll",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.AppContext.4.0.0.nupkg",
-        "System.AppContext.4.0.0.nupkg.sha512",
+        "System.AppContext.4.0.1-beta-23516.nupkg",
+        "System.AppContext.4.0.1-beta-23516.nupkg.sha512",
         "System.AppContext.nuspec"
       ]
     },
@@ -17794,27 +18213,67 @@
         "System.Reflection.nuspec"
       ]
     },
-    "System.Reflection/4.1.0-beta-23225": {
+    "System.Reflection/4.1.0-beta-23516": {
       "type": "package",
       "serviceable": true,
-      "sha512": "WbLtaCxoe5XdqEyZuGpemSQ8YBJ8cj11zx+yxOxJfHbNrmu7oMQ29+J50swaqg3soUc3BVBMqfIhb/7gocDHQA==",
+      "sha512": "wfrnDfk8p2cqJQY3TTHsJRmf3cE3wa6BacncCn4dO58lVwQNNe9ASdLrLJZlMviAjx8+1fUpj6NX7leIOyaBJA==",
       "files": [
         "lib/DNXCore50/System.Reflection.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
-        "lib/net46/_._",
+        "lib/net45/_._",
+        "lib/net46/System.Reflection.dll",
         "lib/netcore50/System.Reflection.dll",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet/System.Reflection.dll",
+        "ref/dotnet5.1/de/System.Reflection.xml",
+        "ref/dotnet5.1/es/System.Reflection.xml",
+        "ref/dotnet5.1/fr/System.Reflection.xml",
+        "ref/dotnet5.1/it/System.Reflection.xml",
+        "ref/dotnet5.1/ja/System.Reflection.xml",
+        "ref/dotnet5.1/ko/System.Reflection.xml",
+        "ref/dotnet5.1/ru/System.Reflection.xml",
+        "ref/dotnet5.1/System.Reflection.dll",
+        "ref/dotnet5.1/System.Reflection.xml",
+        "ref/dotnet5.1/zh-hans/System.Reflection.xml",
+        "ref/dotnet5.1/zh-hant/System.Reflection.xml",
+        "ref/dotnet5.4/de/System.Reflection.xml",
+        "ref/dotnet5.4/es/System.Reflection.xml",
+        "ref/dotnet5.4/fr/System.Reflection.xml",
+        "ref/dotnet5.4/it/System.Reflection.xml",
+        "ref/dotnet5.4/ja/System.Reflection.xml",
+        "ref/dotnet5.4/ko/System.Reflection.xml",
+        "ref/dotnet5.4/ru/System.Reflection.xml",
+        "ref/dotnet5.4/System.Reflection.dll",
+        "ref/dotnet5.4/System.Reflection.xml",
+        "ref/dotnet5.4/zh-hans/System.Reflection.xml",
+        "ref/dotnet5.4/zh-hant/System.Reflection.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
-        "ref/net46/_._",
+        "ref/net45/_._",
+        "ref/net46/System.Reflection.dll",
+        "ref/netcore50/de/System.Reflection.xml",
+        "ref/netcore50/es/System.Reflection.xml",
+        "ref/netcore50/fr/System.Reflection.xml",
+        "ref/netcore50/it/System.Reflection.xml",
+        "ref/netcore50/ja/System.Reflection.xml",
+        "ref/netcore50/ko/System.Reflection.xml",
+        "ref/netcore50/ru/System.Reflection.xml",
+        "ref/netcore50/System.Reflection.dll",
+        "ref/netcore50/System.Reflection.xml",
+        "ref/netcore50/zh-hans/System.Reflection.xml",
+        "ref/netcore50/zh-hant/System.Reflection.xml",
+        "ref/win8/_._",
+        "ref/wp80/_._",
+        "ref/wpa81/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "runtimes/win8-aot/lib/netcore50/System.Reflection.dll",
-        "System.Reflection.4.1.0-beta-23225.nupkg",
-        "System.Reflection.4.1.0-beta-23225.nupkg.sha512",
+        "System.Reflection.4.1.0-beta-23516.nupkg",
+        "System.Reflection.4.1.0-beta-23516.nupkg.sha512",
         "System.Reflection.nuspec"
       ]
     },
@@ -19697,9 +20156,9 @@
   "projectFileDependencyGroups": {
     "": [
       "EntityFramework.Commands >= 7.0.0-rc1-final",
-      "EntityFramework.InMemory >= 7.0.0-rc1-final",
       "EntityFramework.MicrosoftSqlServer >= 7.0.0-rc1-final",
-      "Microsoft.ApplicationInsights.AspNet >= 1.0.0-rc1-update3",
+      "EntityFramework.Sqlite >= 7.0.0-rc1-final",
+      "Microsoft.ApplicationInsights.AspNet >= 1.0.0-rc1-update4",
       "Microsoft.AspNet.Mvc >= 6.0.0-rc1-final",
       "Microsoft.AspNet.Server.Kestrel >= 1.0.0-rc1-final",
       "Microsoft.Extensions.Configuration.UserSecrets >= 1.0.0-rc1-final",
