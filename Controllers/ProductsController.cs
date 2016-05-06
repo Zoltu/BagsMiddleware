@@ -27,6 +27,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 					id = product.Id,
 					name = product.Name,
 					price = product.Price,
+					image_urls = product.ImageUrls.Select(imageUrl => imageUrl.Url),
+					purchase_urls = product.PurchaseUrls.Select(purchaseUrl => purchaseUrl.Url),
 					tags = product.Tags.Select(productTag => productTag.Tag).Select(tag => new
 					{
 						id = tag.Id,
@@ -79,6 +81,32 @@ namespace Zoltu.BagsMiddleware.Controllers
 			var foundProduct = await productTask;
 			var productTag = new Models.ProductTag { ProductId = foundProduct.Id, TagId = foundTag.Id };
 			_bagsContext.ProductTags.Add(productTag);
+			await _bagsContext.SaveChangesAsync();
+
+			return new NoContentResult();
+		}
+
+		[HttpPut]
+		[Route("add_image_url")]
+		public async Task<IActionResult> AddImageUrl([FromQuery(Name = "product_id")] Guid productId, [FromQuery(Name = "image_url")] Uri imageUrl)
+		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest();
+
+			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { ProductId = productId, Url = imageUrl.ToString() });
+			await _bagsContext.SaveChangesAsync();
+
+			return new NoContentResult();
+		}
+
+		[HttpPut]
+		[Route("add_purchase_url")]
+		public async Task<IActionResult> AddPurchaseUrl([FromQuery(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
+		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest();
+
+			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { ProductId = productId, Url = purchaseUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
 			return new NoContentResult();
