@@ -114,7 +114,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 		[HttpPut]
 		[Route("")]
-		public async Task<IActionResult> CreateProduct([FromQuery(Name = "name")] String name, [FromQuery] UInt32 price, [FromQuery(Name = "image_url")] IEnumerable<String> imageUrls, [FromQuery(Name = "purchase_url")] IEnumerable<String> purchaseUrls)
+		public async Task<IActionResult> CreateProduct([FromQuery(Name = "name")] String name, [FromQuery] UInt32 price, [FromQuery(Name = "image_url")] IEnumerable<Uri> imageUrls, [FromQuery(Name = "purchase_url")] IEnumerable<Uri> purchaseUrls)
 		{
 			if (!ModelState.IsValid)
 				return HttpBadRequest();
