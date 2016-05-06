@@ -30,7 +30,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> CreateCategory([FromQuery(Name = "name")] String name)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			_bagsContext.TagCategories.Add(new Models.TagCategory { Name = name });
 			await _bagsContext.SaveChangesAsync();

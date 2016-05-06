@@ -29,6 +29,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("by_category/{category_id:guid}")]
 		public async Task<IActionResult> GetTagsByCategory([FromRoute(Name = "category_id")] Guid categoryId)
 		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest(ModelState);
+
 			return Ok(await _bagsContext.Tags
 				.Where(tag => tag.TagCategoryId == categoryId)
 				.Select(tag => new { id = tag.Id, name = tag.Name, category_id = tag.TagCategoryId, category_name = tag.TagCategory.Name })
@@ -39,6 +42,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("by_product/{product_id:guid}")]
 		public async Task<IActionResult> GetTagsByProduct([FromRoute(Name = "product_id")] Guid productId)
 		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest(ModelState);
+
 			return Ok(await _bagsContext.ProductTags
 				.Where(productTag => productTag.ProductId == productId)
 				.Select(productTag => productTag.Tag)
@@ -51,7 +57,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> CreateTag([FromQuery(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			var category = await _bagsContext.TagCategories.Where(x => x.Id == categoryId).SingleAsync();
 			var newTag = new Models.Tag { Name = name, TagCategory = category };

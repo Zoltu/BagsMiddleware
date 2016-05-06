@@ -44,6 +44,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("by_tags")]
 		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> expectedTagIds)
 		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest(ModelState);
+
 			// FIXME: http://stackoverflow.com/questions/36834629/why-do-i-need-to-call-loadasync-before-querying-over-the-same
 			await _bagsContext.Products.Include(product => product.Tags).LoadAsync();
 
@@ -73,7 +76,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> AddTag([FromQuery(Name = "product_id")] Guid productId, [FromQuery(Name = "tag_id")] Guid tagId)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			var tagTask = _bagsContext.Tags.Where(tag => tag.Id == tagId).SingleAsync();
 			var productTask = _bagsContext.Products.Where(product => product.Id == productId).SingleAsync();
@@ -91,7 +94,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> AddImageUrl([FromQuery(Name = "product_id")] Guid productId, [FromQuery(Name = "image_url")] Uri imageUrl)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { ProductId = productId, Url = imageUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
@@ -104,7 +107,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> AddPurchaseUrl([FromQuery(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { ProductId = productId, Url = purchaseUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
@@ -117,7 +120,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> CreateProduct([FromQuery(Name = "name")] String name, [FromQuery] UInt32 price, [FromQuery(Name = "image_url")] IEnumerable<Uri> imageUrls, [FromQuery(Name = "purchase_url")] IEnumerable<Uri> purchaseUrls)
 		{
 			if (!ModelState.IsValid)
-				return HttpBadRequest();
+				return HttpBadRequest(ModelState);
 
 			var newProduct = _bagsContext.Products.Add(new Models.Product { Name = name, Price = price });
 			await _bagsContext.SaveChangesAsync();
