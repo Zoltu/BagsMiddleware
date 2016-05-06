@@ -12,11 +12,7 @@ namespace Zoltu.BagsMiddleware.Models
 		[Required]
 		public String Name { get; set; }
 		[Required]
-		public UInt32 Price { get; set; }
-
-		public UInt32 Length { get; set; }
-		public UInt32 Width { get; set; }
-		public UInt32 Height { get; set; }
+		public Int64 Price { get; set; }
 
 		public List<ProductImageUrl> ImageUrls { get; set; } = new List<ProductImageUrl>();
 		public List<ProductPurchaseUrl> PurchaseUrls { get; set; } = new List<ProductPurchaseUrl>();
