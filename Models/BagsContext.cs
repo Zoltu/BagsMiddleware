@@ -15,15 +15,18 @@ namespace Zoltu.BagsMiddleware.Models
 		{
 			// unique constraint on tag name & category
 			modelBuilder.Entity<Tag>()
-				.HasAlternateKey(tag => new { tag.Name, tag.TagCategoryId });
+				.HasIndex(tag => new { tag.Name, tag.TagCategoryId })
+				.IsUnique(true);
 
 			// unique constraint on category name
 			modelBuilder.Entity<TagCategory>()
-				.HasAlternateKey(category => category.Name);
+				.HasIndex(category => category.Name)
+				.IsUnique(true);
 
 			// unique constraint on product tag
 			modelBuilder.Entity<ProductTag>()
-				.HasAlternateKey(productTag => new { productTag.TagId, productTag.ProductId });
+				.HasIndex(productTag => new { productTag.TagId, productTag.ProductId })
+				.IsUnique(true);
 		}
 	}
 }

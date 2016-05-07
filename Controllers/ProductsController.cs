@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Zoltu.BagsMiddleware.Models;
 
 namespace Zoltu.BagsMiddleware.Controllers
 {
 	[Route("api/products")]
 	public class ProductsController : Controller
     {
-		private Models.BagsContext _bagsContext;
+		private BagsContext _bagsContext;
 
-		public ProductsController(Models.BagsContext bagsContext)
+		public ProductsController(BagsContext bagsContext)
 		{
 			_bagsContext = bagsContext;
 		}
@@ -22,8 +23,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetProducts()
 		{
 			return Ok(await _bagsContext.Products
+				.WithIncludes()
+				.AsAsyncEnumerable()
 				.Select(product => product.ToExpandedWireFormat())
-				.ToListAsync());
+				.ToList());
 		}
 
 		[HttpGet]
@@ -41,8 +44,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 					.All(expectedTagId => product.Tags
 						.Select(productTag => productTag.TagId)
 						.Contains(expectedTagId)))
+				.WithIncludes()
+				.AsAsyncEnumerable()
 				.Select(product => product.ToExpandedWireFormat())
-				.ToListAsync());
+				.ToList());
 		}
 
 		[HttpPut]
@@ -52,8 +57,14 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpBadRequest(ModelState);
 
-			var tagTask = _bagsContext.Tags.Where(tag => tag.Id == tagId).SingleAsync();
-			var productTask = _bagsContext.Products.Where(product => product.Id == productId).SingleAsync();
+			var tagTask = _bagsContext.Tags
+				.WithIncludes()
+				.Where(tag => tag.Id == tagId)
+				.SingleAsync();
+			var productTask = _bagsContext.Products
+				.WithIncludes()
+				.Where(product => product.Id == productId)
+				.SingleAsync();
 			var foundTag = await tagTask;
 			var foundProduct = await productTask;
 			var productTag = new Models.ProductTag { ProductId = foundProduct.Id, TagId = foundTag.Id };
@@ -70,7 +81,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpBadRequest(ModelState);
 
-			var foundProduct = await _bagsContext.Products.Where(product => product.Id == productId).SingleAsync();
+			var foundProduct = await _bagsContext.Products
+				.WithIncludes()
+				.Where(product => product.Id == productId)
+				.SingleAsync();
 			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { ProductId = foundProduct.Id, Url = imageUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
@@ -84,7 +98,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpBadRequest(ModelState);
 
-			var foundProduct = await _bagsContext.Products.Where(product => product.Id == productId).SingleAsync();
+			var foundProduct = await _bagsContext.Products
+				.WithIncludes()
+				.Where(product => product.Id == productId)
+				.SingleAsync();
 			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { ProductId = foundProduct.Id, Url = purchaseUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 

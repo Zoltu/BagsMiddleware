@@ -3,15 +3,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Zoltu.BagsMiddleware.Models;
 
 namespace Zoltu.BagsMiddleware.Controllers
 {
 	[Route("api/tags")]
 	public class TagsController : Controller
 	{
-		private Models.BagsContext _bagsContext;
+		private BagsContext _bagsContext;
 
-		public TagsController(Models.BagsContext bagsContext)
+		public TagsController(BagsContext bagsContext)
 		{
 			_bagsContext = bagsContext;
 		}
@@ -21,8 +22,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetTags()
 		{
 			return Ok(await _bagsContext.Tags
+				.WithIncludes()
+				.AsAsyncEnumerable()
 				.Select(tag => tag.ToExpandedWireFormat())
-				.ToListAsync());
+				.ToList());
 		}
 
 		[HttpGet]
@@ -33,9 +36,11 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpBadRequest(ModelState);
 
 			return Ok(await _bagsContext.Tags
+				.WithIncludes()
 				.Where(tag => tag.TagCategoryId == categoryId)
+				.AsAsyncEnumerable()
 				.Select(tag => tag.ToExpandedWireFormat())
-				.ToListAsync());
+				.ToList());
 		}
 
 		[HttpGet]
@@ -46,10 +51,12 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpBadRequest(ModelState);
 
 			return Ok(await _bagsContext.ProductTags
+				.WithTagIncludes()
 				.Where(productTag => productTag.ProductId == productId)
+				.AsAsyncEnumerable()
 				.Select(productTag => productTag.Tag)
 				.Select(tag => tag.ToExpandedWireFormat())
-				.ToListAsync());
+				.ToList());
 		}
 
 		[HttpPut]

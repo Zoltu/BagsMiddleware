@@ -8,7 +8,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 {
 	[Route("api/tag_categories")]
 	public class TagCategoriesController : Controller
-    {
+	{
 		private Models.BagsContext _bagsContext;
 
 		public TagCategoriesController(Models.BagsContext bagsContext)
@@ -21,8 +21,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetCategories()
 		{
 			return Ok(await _bagsContext.TagCategories
-				.Select(category => category.ToExpandedWireFormat())
-				.ToListAsync());
+				.Include(category => category.Tags)
+				.AsAsyncEnumerable()
+				.Select(category => category.ToBaseWireFormat())
+				.ToList());
 		}
 
 		[HttpPut]
@@ -36,7 +38,23 @@ namespace Zoltu.BagsMiddleware.Controllers
 			_bagsContext.TagCategories.Add(newTagCategory);
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(newTagCategory.ToExpandedWireFormat());
+			return Ok(newTagCategory.ToBaseWireFormat());
+		}
+
+		[HttpPut]
+		[Route("{category_id:guid}")]
+		public async Task<IActionResult> EditCategory([FromRoute(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
+		{
+			if (!ModelState.IsValid)
+				return HttpBadRequest(ModelState);
+
+			var foundCategory = await _bagsContext.TagCategories
+				.Where(category => category.Id == categoryId)
+				.SingleAsync();
+			foundCategory.Name = name;
+			await _bagsContext.SaveChangesAsync();
+
+			return Ok(foundCategory.ToBaseWireFormat());
 		}
 	}
 }

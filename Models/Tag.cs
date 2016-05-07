@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
+using System.Linq;
+using Microsoft.Data.Entity;
 
 namespace Zoltu.BagsMiddleware.Models
 {
@@ -33,6 +35,15 @@ namespace Zoltu.BagsMiddleware.Models
 			var result = ToBaseWireFormat();
 			result.category = TagCategory.ToBaseWireFormat();
 			return result;
+		}
+	}
+
+	public static class TagExtensions
+	{
+		public static IQueryable<Tag> WithIncludes(this IQueryable<Tag> query)
+		{
+			return query
+				.Include(tag => tag.TagCategory);
 		}
 	}
 }

@@ -92,9 +92,11 @@ namespace Zoltu.BagsMiddleware
 				var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
 				// intentionally leak this connection so the in-memory database doesn't shut down
 				dbContext.Database.OpenConnection();
-				dbContext.Database.Migrate();
+				dbContext.Database.EnsureDeleted();
+				dbContext.Database.EnsureCreated();
 			}
 		}
+
 		private void ConfigureCommon(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
 		{
 			loggerFactory.AddConsole(minLevel: LogLevel.Information);

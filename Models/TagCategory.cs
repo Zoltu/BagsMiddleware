@@ -27,7 +27,7 @@ namespace Zoltu.BagsMiddleware.Models
 		public dynamic ToExpandedWireFormat()
 		{
 			var result = ToBaseWireFormat();
-			result.tags = Tags.Select(tag => tag.ToExpandedWireFormat());
+			result.tags = Tags.Select(tag => tag.ToExpandedWireFormat()).ToList();
 			return result;
 		}
     }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Microsoft.Data.Entity;
 
 namespace Zoltu.BagsMiddleware.Models
 {
@@ -15,4 +17,13 @@ namespace Zoltu.BagsMiddleware.Models
 		public Guid ProductId { get; set; }
 		public Product Product { get; set; }
     }
+
+	public static class  ProductTagExtensions
+	{
+		public static IQueryable<ProductTag> WithTagIncludes(this IQueryable<ProductTag> query)
+		{
+			return query
+				.Include(productTag => productTag.Tag).ThenInclude(tag => tag.TagCategory);
+		}
+	}
 }
