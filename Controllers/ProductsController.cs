@@ -57,16 +57,14 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpBadRequest(ModelState);
 
-			var tagTask = _bagsContext.Tags
+			var foundTag = await _bagsContext.Tags
 				.WithIncludes()
 				.Where(tag => tag.Id == tagId)
 				.SingleAsync();
-			var productTask = _bagsContext.Products
+			var foundProduct = await _bagsContext.Products
 				.WithIncludes()
 				.Where(product => product.Id == productId)
 				.SingleAsync();
-			var foundTag = await tagTask;
-			var foundProduct = await productTask;
 			var productTag = new Models.ProductTag { ProductId = foundProduct.Id, TagId = foundTag.Id };
 			_bagsContext.ProductTags.Add(productTag);
 			await _bagsContext.SaveChangesAsync();
