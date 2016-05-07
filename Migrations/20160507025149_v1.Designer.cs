@@ -8,8 +8,8 @@ using Zoltu.BagsMiddleware.Models;
 namespace BagsMiddleware.Migrations
 {
     [DbContext(typeof(BagsContext))]
-    [Migration("20160506153928_v2")]
-    partial class v2
+    [Migration("20160507025149_v1")]
+    partial class v1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -21,7 +21,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetCategories()
 		{
 			return Ok(await _bagsContext.TagCategories
-				.Select(category => new { id = category.Id, name = category.Name, tags = category.Tags.Select(tag => new { id = tag.Id, name = tag.Name }) })
+				.Select(category => category.ToExpandedWireFormat())
 				.ToListAsync());
 		}
 
@@ -32,10 +32,11 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpBadRequest(ModelState);
 
-			_bagsContext.TagCategories.Add(new Models.TagCategory { Name = name });
+			var newTagCategory = new Models.TagCategory { Name = name };
+			_bagsContext.TagCategories.Add(newTagCategory);
 			await _bagsContext.SaveChangesAsync();
 
-			return new NoContentResult();
+			return Ok(newTagCategory.ToExpandedWireFormat());
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
 
 namespace Zoltu.BagsMiddleware.Models
 {

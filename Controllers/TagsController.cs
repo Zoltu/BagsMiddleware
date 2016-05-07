@@ -21,7 +21,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetTags()
 		{
 			return Ok(await _bagsContext.Tags
-				.Select(tag => new { id = tag.Id, name = tag.Name, category_id = tag.TagCategoryId, category_name = tag.TagCategory.Name })
+				.Select(tag => tag.ToExpandedWireFormat())
 				.ToListAsync());
 		}
 
@@ -34,7 +34,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			return Ok(await _bagsContext.Tags
 				.Where(tag => tag.TagCategoryId == categoryId)
-				.Select(tag => new { id = tag.Id, name = tag.Name, category_id = tag.TagCategoryId, category_name = tag.TagCategory.Name })
+				.Select(tag => tag.ToExpandedWireFormat())
 				.ToListAsync());
 		}
 
@@ -48,7 +48,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			return Ok(await _bagsContext.ProductTags
 				.Where(productTag => productTag.ProductId == productId)
 				.Select(productTag => productTag.Tag)
-				.Select(tag => new { id = tag.Id, name = tag.Name, category_id = tag.TagCategoryId, category_name = tag.TagCategory.Name })
+				.Select(tag => tag.ToExpandedWireFormat())
 				.ToListAsync());
 		}
 
@@ -64,7 +64,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			_bagsContext.Tags.Add(newTag);
 			await _bagsContext.SaveChangesAsync();
 
-			return new NoContentResult();
+			return Ok(newTag.ToExpandedWireFormat());
 		}
 	}
 }

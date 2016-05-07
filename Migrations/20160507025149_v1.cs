@@ -4,7 +4,7 @@ using Microsoft.Data.Entity.Migrations;
 
 namespace BagsMiddleware.Migrations
 {
-    public partial class First : Migration
+    public partial class v1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,11 +13,8 @@ namespace BagsMiddleware.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Height = table.Column<uint>(nullable: false),
-                    Length = table.Column<uint>(nullable: false),
                     Name = table.Column<string>(nullable: false),
-                    Price = table.Column<uint>(nullable: false),
-                    Width = table.Column<uint>(nullable: false)
+                    Price = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
