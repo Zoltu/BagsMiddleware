@@ -26,9 +26,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetProducts()
 		{
 			return HttpResult.Ok(await _bagsContext.Products
-				.WithSafeIncludes()
+				.WithUnsafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(product => product.ToSafeExpandedWireFormat())
+				.Select(product => product.ToUnsafeExpandedWireFormat())
 				.ToList());
 		}
 
