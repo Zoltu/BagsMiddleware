@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;
 
 namespace Zoltu.BagsMiddleware.Controllers
@@ -21,57 +22,132 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("")]
 		public async Task<IActionResult> GetTags()
 		{
-			return Ok(await _bagsContext.Tags
-				.WithIncludes()
+			return HttpResult.Ok(await _bagsContext.Tags
+				.WithSafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(tag => tag.ToExpandedWireFormat())
+				.Select(tag => tag.ToSafeExpandedWireFormat())
 				.ToList());
 		}
 
 		[HttpGet]
-		[Route("by_category/{category_id:guid}")]
-		public async Task<IActionResult> GetTagsByCategory([FromRoute(Name = "category_id")] Guid categoryId)
+		[Route("{tag_id:guid}")]
+		public async Task<IActionResult> GetTag([FromRoute(Name = "tag_id")] Guid tagId)
 		{
+			// validate input
 			if (!ModelState.IsValid)
-				return HttpBadRequest(ModelState);
+				return HttpResult.BadRequest(ModelState);
 
-			return Ok(await _bagsContext.Tags
-				.WithIncludes()
-				.Where(tag => tag.TagCategoryId == categoryId)
-				.AsAsyncEnumerable()
-				.Select(tag => tag.ToExpandedWireFormat())
-				.ToList());
-		}
+			// locate tag
+			var foundTag = await _bagsContext.Tags
+				.WithUnsafeIncludes()
+				.Where(tag => tag.Id == tagId)
+				.SingleOrDefaultAsync();
+			if (foundTag == null)
+				return HttpResult.NotFound();
 
-		[HttpGet]
-		[Route("by_product/{product_id:guid}")]
-		public async Task<IActionResult> GetTagsByProduct([FromRoute(Name = "product_id")] Guid productId)
-		{
-			if (!ModelState.IsValid)
-				return HttpBadRequest(ModelState);
-
-			return Ok(await _bagsContext.ProductTags
-				.WithTagIncludes()
-				.Where(productTag => productTag.ProductId == productId)
-				.AsAsyncEnumerable()
-				.Select(productTag => productTag.Tag)
-				.Select(tag => tag.ToExpandedWireFormat())
-				.ToList());
+			return HttpResult.Ok(foundTag.ToUnsafeExpandedWireFormat());
 		}
 
 		[HttpPut]
 		[Route("")]
 		public async Task<IActionResult> CreateTag([FromQuery(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
 		{
+			// validate input
 			if (!ModelState.IsValid)
-				return HttpBadRequest(ModelState);
+				return HttpResult.BadRequest(ModelState);
 
-			var category = await _bagsContext.TagCategories.Where(x => x.Id == categoryId).SingleAsync();
+			// verify category exists
+			var category = await _bagsContext
+				.TagCategories
+				.Where(x => x.Id == categoryId)
+				.SingleOrDefaultAsync();
+			if (category == null)
+				return HttpResult.BadRequest($"Category {categoryId} does not exist.");
+
+			// check for existing tag
+			var existingTag = await _bagsContext.Tags
+				.WithSafeIncludes()
+				.Where(tag => tag.Name == name && tag.TagCategoryId == categoryId)
+				.SingleOrDefaultAsync();
+			if (existingTag != null)
+				return HttpResult.Ok(existingTag.ToSafeExpandedWireFormat());
+
+			// create a new tag
 			var newTag = new Models.Tag { Name = name, TagCategory = category };
 			_bagsContext.Tags.Add(newTag);
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(newTag.ToExpandedWireFormat());
+			return HttpResult.Ok(newTag.ToSafeExpandedWireFormat());
+		}
+
+		[HttpPut]
+		[Route("{tag_id:guid}")]
+		public async Task<IActionResult> EditTag([FromRoute(Name = "tag_id")] Guid tagId, [FromQuery(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
+		{
+			// validate input
+			if (!ModelState.IsValid)
+				return HttpResult.BadRequest(ModelState);
+
+			// locate tag
+			var foundTag = await _bagsContext.Tags
+				.WithSafeIncludes()
+				.Where(tag => tag.Id == tagId)
+				.SingleOrDefaultAsync();
+			if (foundTag == null)
+				return HttpResult.NotFound();
+
+			// verify there are changes
+			if (foundTag.TagCategoryId == categoryId && foundTag.Name == name)
+				return HttpResult.Ok(foundTag.ToSafeExpandedWireFormat());
+
+			// locate the new category
+			var newCategory = await _bagsContext.TagCategories
+				.Where(category => category.Id == categoryId)
+				.SingleOrDefaultAsync();
+			if (newCategory == null)
+				return HttpResult.BadRequest($"Category {categoryId} does not exist.");
+
+			// verify no conflict on unique constraint
+			var duplicateTag = await _bagsContext.Tags
+				.WithSafeIncludes()
+				.Where(tag => tag.TagCategoryId == categoryId && tag.Name == name)
+				.SingleOrDefaultAsync();
+			if (duplicateTag != null)
+				return HttpResult.Conflict(duplicateTag.ToSafeExpandedWireFormat());
+
+			// change the category/name
+			foundTag.TagCategory = newCategory;
+			foundTag.Name = name;
+			await _bagsContext.SaveChangesAsync();
+
+			return HttpResult.Ok(foundTag.ToSafeExpandedWireFormat());
+		}
+
+		[HttpDelete]
+		[Route("{tag_id:guid}")]
+		public async Task<IActionResult> DeleteTag([FromRoute(Name = "tag_id")] Guid tagId)
+		{
+			// validate input
+			if (!ModelState.IsValid)
+				return HttpResult.BadRequest(ModelState);
+
+			// locate tag
+			var foundTag = await _bagsContext.Tags
+				.Include(tag => tag.Products)
+				.Where(tag => tag.Id == tagId)
+				.SingleOrDefaultAsync();
+			if (foundTag == null)
+				return HttpResult.NoContent();
+
+			// validate it doesn't have any products
+			if (foundTag.Products.Any())
+				return HttpResult.Conflict("Tag must have no associated products before it can be deleted.");
+
+			// delete
+			_bagsContext.Tags.Remove(foundTag);
+			await _bagsContext.SaveChangesAsync();
+
+			return HttpResult.NoContent();
 		}
 	}
 }

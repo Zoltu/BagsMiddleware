@@ -30,23 +30,34 @@ namespace Zoltu.BagsMiddleware.Models
 			return result;
 		}
 
-		public dynamic ToExpandedWireFormat()
+		public dynamic ToSafeExpandedWireFormat()
 		{
 			var result = ToBaseWireFormat();
 			result.image_urls = ImageUrls.Select(imageUrl => imageUrl.Url).ToList();
 			result.purchase_urls = PurchaseUrls.Select(purchaseUrl => purchaseUrl.Url).ToList();
-			result.tags = Tags.Select(productTag => productTag.Tag).Select(tag => tag.ToExpandedWireFormat()).ToList();
+			return result;
+		}
+
+		public dynamic ToUnsafeExpandedWireFormat()
+		{
+			var result = ToSafeExpandedWireFormat();
+			result.tags = Tags.Select(productTag => productTag.Tag).Select(tag => tag.ToSafeExpandedWireFormat()).ToList();
 			return result;
 		}
 	}
 
 	public static class ProductExtensions
 	{
-		public static IQueryable<Product> WithIncludes(this IQueryable<Product> query)
+		public static IQueryable<Product> WithSafeIncludes(this IQueryable<Product> query)
 		{
 			return query
 				.Include(product => product.ImageUrls)
-				.Include(product => product.PurchaseUrls)
+				.Include(product => product.PurchaseUrls);
+		}
+
+		public static IQueryable<Product> WithUnsafeIncludes(this IQueryable<Product> query)
+		{
+			return query
 				.Include(product => product.Tags).ThenInclude(productTag => productTag.Tag.TagCategory);
 		}
 	}

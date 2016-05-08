@@ -23,9 +23,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetProducts()
 		{
 			return Ok(await _bagsContext.Products
-				.WithIncludes()
+				.WithSafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(product => product.ToExpandedWireFormat())
+				.Select(product => product.ToSafeExpandedWireFormat())
 				.ToList());
 		}
 
@@ -44,9 +44,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 					.All(expectedTagId => product.Tags
 						.Select(productTag => productTag.TagId)
 						.Contains(expectedTagId)))
-				.WithIncludes()
+				.WithSafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(product => product.ToExpandedWireFormat())
+				.Select(product => product.ToSafeExpandedWireFormat())
 				.ToList());
 		}
 
@@ -62,10 +62,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 			await _bagsContext.SaveChangesAsync();
 
 			var updatedProduct = await _bagsContext.Products
-				.WithIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleAsync();
-			return Ok(updatedProduct.ToExpandedWireFormat());
+			return Ok(updatedProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpPut]
@@ -76,13 +76,13 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpBadRequest(ModelState);
 
 			var foundProduct = await _bagsContext.Products
-				.WithIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleAsync();
 			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { ProductId = foundProduct.Id, Url = imageUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(foundProduct.ToExpandedWireFormat());
+			return Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpPut]
@@ -93,13 +93,13 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpBadRequest(ModelState);
 
 			var foundProduct = await _bagsContext.Products
-				.WithIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleAsync();
 			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { ProductId = foundProduct.Id, Url = purchaseUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(foundProduct.ToExpandedWireFormat());
+			return Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpPut]
@@ -113,7 +113,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			_bagsContext.Products.Add(newProduct);
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(newProduct.ToExpandedWireFormat());
+			return Ok(newProduct.ToSafeExpandedWireFormat());
 		}
 	}
 }

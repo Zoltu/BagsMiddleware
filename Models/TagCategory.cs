@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Linq;
+using Microsoft.Data.Entity;
 
 namespace Zoltu.BagsMiddleware.Models
 {
@@ -24,11 +25,20 @@ namespace Zoltu.BagsMiddleware.Models
 			return result;
 		}
 
-		public dynamic ToExpandedWireFormat()
+		public dynamic ToUnsafeExpandedWireFormat()
 		{
 			var result = ToBaseWireFormat();
-			result.tags = Tags.Select(tag => tag.ToExpandedWireFormat()).ToList();
+			result.tags = Tags.Select(tag => tag.ToBaseWireFormat()).ToList();
 			return result;
 		}
     }
+
+	public static class TagCategoryExtensions
+	{
+		public static IQueryable<TagCategory> WithUnsafeIncludes(this IQueryable<TagCategory> query)
+		{
+			return query
+				.Include(category => category.Tags);
+		}
+	}
 }
