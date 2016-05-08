@@ -56,6 +56,7 @@ namespace Zoltu.BagsMiddleware.Models
 		public static IQueryable<Tag> WithUnsafeIncludes(this IQueryable<Tag> query)
 		{
 			return query
+				.WithSafeIncludes()
 				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.ImageUrls)
 				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.PurchaseUrls)
 				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.Tags).ThenInclude(productTag => productTag.Tag).ThenInclude(tag => tag.TagCategory);

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.Data.Entity;
 using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;
@@ -143,7 +145,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/tag/${tag_id:guid}")]
+		[Route("{product_id:guid}/tag/{tag_id:guid}")]
 		public async Task<IActionResult> AddTag([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "tag_id")] Guid tagId)
 		{
 			// validate input
@@ -175,7 +177,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/tag/${tag_id:guid}")]
+		[Route("{product_id:guid}/tag/{tag_id:guid}")]
 		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "tag_id")] Guid tagId)
 		{
 			// validate input
@@ -234,9 +236,12 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/image_url/{image_url:uri}")]
-		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] Uri imageUrl)
+		[Route("{product_id:guid}/image_url/{image_url}")]
+		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] String imageUrlString)
 		{
+			// FIXME: figure out how to get the image_url from the route as a decoded URI 
+			var imageUrl = new Uri(WebUtility.UrlDecode(imageUrlString));
+
 			// validate input
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
@@ -284,9 +289,12 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/image_url/{purchase_url:uri}")]
-		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] Uri purchaseUrl)
+		[Route("{product_id:guid}/image_url/{purchase_url}")]
+		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] String purchaseUrlString)
 		{
+			// FIXME: figure out how to get the image_url from the route as a decoded URI 
+			var purchaseUrl = new Uri(WebUtility.UrlDecode(purchaseUrlString));
+
 			// validate input
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
