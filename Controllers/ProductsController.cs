@@ -213,8 +213,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/image_url")]
-		public async Task<IActionResult> AddImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "image_url")] Uri imageUrl)
+		[Route("{product_id:guid}/image_url/{image_url}")]
+		public async Task<IActionResult> AddImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] Uri imageUrl)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -266,8 +266,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/purchase_url")]
-		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
+		[Route("{product_id:guid}/purchase_url/{purchase_url}")]
+		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] Uri purchaseUrl)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -289,7 +289,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/image_url/{purchase_url}")]
+		[Route("{product_id:guid}/purchase_url/{purchase_url}")]
 		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] String purchaseUrlString)
 		{
 			// FIXME: figure out how to get the image_url from the route as a decoded URI 
