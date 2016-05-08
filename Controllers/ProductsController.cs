@@ -233,6 +233,33 @@ namespace Zoltu.BagsMiddleware.Controllers
 			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
 		}
 
+		[HttpDelete]
+		[Route("{product_id:guid}/image_url/{image_url:uri}")]
+		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] Uri imageUrl)
+		{
+			// validate input
+			if (!ModelState.IsValid)
+				return HttpResult.BadRequest(ModelState);
+
+			// validate product
+			var foundProduct = await _bagsContext.Products
+				.Include(product => product.ImageUrls)
+				.Where(product => product.Id == productId)
+				.SingleOrDefaultAsync();
+			if (foundProduct == null)
+				return HttpResult.NotFound();
+
+			// locate image URL
+			var foundProductImages = foundProduct.ImageUrls
+				.Where(productImageUrl => productImageUrl.Url == imageUrl.ToString());
+
+			// remove the matching product images
+			_bagsContext.ProductImageUrls.RemoveRange(foundProductImages);
+			await _bagsContext.SaveChangesAsync();
+
+			return HttpResult.NoContent();
+		}
+
 		[HttpPut]
 		[Route("{product_id:guid}/purchase_url")]
 		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
@@ -254,6 +281,33 @@ namespace Zoltu.BagsMiddleware.Controllers
 			await _bagsContext.SaveChangesAsync();
 
 			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
+		}
+
+		[HttpDelete]
+		[Route("{product_id:guid}/image_url/{purchase_url:uri}")]
+		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] Uri purchaseUrl)
+		{
+			// validate input
+			if (!ModelState.IsValid)
+				return HttpResult.BadRequest(ModelState);
+
+			// validate product
+			var foundProduct = await _bagsContext.Products
+				.Include(product => product.PurchaseUrls)
+				.Where(product => product.Id == productId)
+				.SingleOrDefaultAsync();
+			if (foundProduct == null)
+				return HttpResult.NotFound();
+
+			// locate image URL
+			var foundProductPurchaseUrl = foundProduct.PurchaseUrls
+				.Where(productPurchaseUrl => productPurchaseUrl.Url == purchaseUrl.ToString());
+
+			// remove the matching product images
+			_bagsContext.ProductPurchaseUrls.RemoveRange(foundProductPurchaseUrl);
+			await _bagsContext.SaveChangesAsync();
+
+			return HttpResult.NoContent();
 		}
 	}
 }
