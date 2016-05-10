@@ -1,5 +1,6 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.AspNet.Mvc.Formatters;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Sqlite;
@@ -57,6 +58,8 @@ namespace Zoltu.BagsMiddleware
 			services.AddMvc(options =>
 			{
 				options.RespectBrowserAcceptHeader = true;
+				options.InputFormatters.Clear();
+				options.InputFormatters.Add(new JsonInputFormatter());
 				options.OutputFormatters.Insert(0, new HttpNotAcceptableOutputFormatter());
 				options.OutputFormatters.RemoveType<StringOutputFormatter>();
 			});

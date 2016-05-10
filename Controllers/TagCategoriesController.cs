@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Newtonsoft.Json;
 using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;
 
@@ -47,9 +48,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 			return HttpResult.Ok(foundTagCategory.ToUnsafeExpandedWireFormat());
 		}
 
+		public class CreateCategoryRequest
+		{
+			[JsonProperty(Required = Required.Always, PropertyName = "name")]
+			public String Name { get; set; }
+		}
+
 		[HttpPut]
 		[Route("")]
-		public async Task<IActionResult> CreateCategory([FromQuery(Name = "name")] String name)
+		public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -57,22 +64,28 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// check for existing category
 			var foundTagCategory = await _bagsContext.TagCategories
-				.Where(category => category.Name == name)
+				.Where(category => category.Name == request.Name)
 				.SingleOrDefaultAsync();
 			if (foundTagCategory != null)
 				return HttpResult.Ok(foundTagCategory.ToBaseWireFormat());
 
 			// create a new tag
-			var newTagCategory = new Models.TagCategory { Name = name };
+			var newTagCategory = new Models.TagCategory { Name = request.Name };
 			_bagsContext.TagCategories.Add(newTagCategory);
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.Ok(newTagCategory.ToBaseWireFormat());
 		}
 
+		public class EditCategoryRequest
+		{
+			[JsonProperty(Required = Required.Always, PropertyName = "name")]
+			public String Name { get; set; }
+		}
+
 		[HttpPut]
 		[Route("{category_id:guid}")]
-		public async Task<IActionResult> EditCategory([FromRoute(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
+		public async Task<IActionResult> EditCategory([FromRoute(Name = "category_id")] Guid categoryId, [FromBody] EditCategoryRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -86,18 +99,18 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpResult.NotFound();
 
 			// verify there are actual changes
-			if (foundCategory.Name == name)
+			if (foundCategory.Name == request.Name)
 				return HttpResult.Ok(foundCategory.ToBaseWireFormat());
 
 			// verify no conflicts with unique constraint
 			var duplicateCategory = await _bagsContext.TagCategories
-				.Where(category => category.Name == name)
+				.Where(category => category.Name == request.Name)
 				.SingleOrDefaultAsync();
 			if (duplicateCategory != null)
 				return HttpResult.Conflict(duplicateCategory.ToBaseWireFormat());
 
 			// change the name
-			foundCategory.Name = name;
+			foundCategory.Name = request.Name;
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.Ok(foundCategory.ToBaseWireFormat());

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Newtonsoft.Json;
 using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;
 
@@ -48,9 +49,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 			return HttpResult.Ok(foundTag.ToUnsafeExpandedWireFormat());
 		}
 
+		public class CreateTagRequest
+		{
+			[JsonProperty(Required = Required.Always, PropertyName = "name")]
+			public String Name { get; set; }
+		}
+
 		[HttpPut]
 		[Route("")]
-		public async Task<IActionResult> CreateTag([FromQuery(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
+		public async Task<IActionResult> CreateTag([FromQuery(Name = "category_id")] Guid categoryId, [FromBody] CreateTagRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -67,22 +74,31 @@ namespace Zoltu.BagsMiddleware.Controllers
 			// check for existing tag
 			var existingTag = await _bagsContext.Tags
 				.WithSafeIncludes()
-				.Where(tag => tag.Name == name && tag.TagCategoryId == categoryId)
+				.Where(tag => tag.Name == request.Name && tag.TagCategoryId == categoryId)
 				.SingleOrDefaultAsync();
 			if (existingTag != null)
 				return HttpResult.Ok(existingTag.ToSafeExpandedWireFormat());
 
 			// create a new tag
-			var newTag = new Models.Tag { Name = name, TagCategory = category };
+			var newTag = new Models.Tag { Name = request.Name, TagCategory = category };
 			_bagsContext.Tags.Add(newTag);
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.Ok(newTag.ToSafeExpandedWireFormat());
 		}
 
+		public class EditTagRequest
+		{
+			[JsonProperty(Required = Required.Always, PropertyName = "category_id")]
+			public Guid CategoryId { get; set; }
+
+			[JsonProperty(Required = Required.Always, PropertyName = "name")]
+			public String Name { get; set; }
+		}
+
 		[HttpPut]
 		[Route("{tag_id:guid}")]
-		public async Task<IActionResult> EditTag([FromRoute(Name = "tag_id")] Guid tagId, [FromQuery(Name = "category_id")] Guid categoryId, [FromQuery(Name = "name")] String name)
+		public async Task<IActionResult> EditTag([FromRoute(Name = "tag_id")] Guid tagId, [FromBody] EditTagRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -97,27 +113,27 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpResult.NotFound();
 
 			// verify there are changes
-			if (foundTag.TagCategoryId == categoryId && foundTag.Name == name)
+			if (foundTag.TagCategoryId == request.CategoryId && foundTag.Name == request.Name)
 				return HttpResult.Ok(foundTag.ToSafeExpandedWireFormat());
 
 			// locate the new category
 			var newCategory = await _bagsContext.TagCategories
-				.Where(category => category.Id == categoryId)
+				.Where(category => category.Id == request.CategoryId)
 				.SingleOrDefaultAsync();
 			if (newCategory == null)
-				return HttpResult.BadRequest($"Category {categoryId} does not exist.");
+				return HttpResult.BadRequest($"Category {request.CategoryId} does not exist.");
 
 			// verify no conflict on unique constraint
 			var duplicateTag = await _bagsContext.Tags
 				.WithSafeIncludes()
-				.Where(tag => tag.TagCategoryId == categoryId && tag.Name == name)
+				.Where(tag => tag.TagCategoryId == request.CategoryId && tag.Name == request.Name)
 				.SingleOrDefaultAsync();
 			if (duplicateTag != null)
 				return HttpResult.Conflict(duplicateTag.ToSafeExpandedWireFormat());
 
 			// change the category/name
 			foundTag.TagCategory = newCategory;
-			foundTag.Name = name;
+			foundTag.Name = request.Name;
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.Ok(foundTag.ToSafeExpandedWireFormat());
