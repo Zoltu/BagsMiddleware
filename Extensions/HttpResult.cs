@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.ModelBinding;
@@ -17,7 +18,14 @@ namespace Zoltu.BagsMiddleware.Extensions
 		public static IActionResult BadRequest(ModelStateDictionary modelState)
 		{
 			if (modelState == null) new ArgumentNullException(nameof(modelState));
-			return new ObjectResult(new SerializableError(modelState)) { StatusCode = StatusCodes.Status400BadRequest };
+
+			var error = modelState.SelectMany(x => x.Value.Errors).First();
+			if (error?.ErrorMessage != null && error.ErrorMessage != String.Empty)
+				return BadRequest(error.ErrorMessage);
+			else if (error?.Exception?.Message != null)
+				return BadRequest(error.Exception.Message);
+			else
+				return BadRequest(new SerializableError(modelState));
 		}
 
 		public static IActionResult NotFound() { return new HttpStatusCodeResult(StatusCodes.Status404NotFound); }
