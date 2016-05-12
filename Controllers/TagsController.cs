@@ -51,13 +51,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 		public class CreateTagRequest
 		{
+			[JsonProperty(Required = Required.Always, PropertyName = "category_id")]
+			public Guid CategoryId { get; set; }
 			[JsonProperty(Required = Required.Always, PropertyName = "name")]
 			public String Name { get; set; }
 		}
 
 		[HttpPut]
 		[Route("")]
-		public async Task<IActionResult> CreateTag([FromQuery(Name = "category_id")] Guid categoryId, [FromBody] CreateTagRequest request)
+		public async Task<IActionResult> CreateTag([FromBody] CreateTagRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -66,15 +68,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 			// verify category exists
 			var category = await _bagsContext
 				.TagCategories
-				.Where(x => x.Id == categoryId)
+				.Where(x => x.Id == request.CategoryId)
 				.SingleOrDefaultAsync();
 			if (category == null)
-				return HttpResult.BadRequest($"Category {categoryId} does not exist.");
+				return HttpResult.BadRequest($"Category {request.CategoryId} does not exist.");
 
 			// check for existing tag
 			var existingTag = await _bagsContext.Tags
 				.WithSafeIncludes()
-				.Where(tag => tag.Name == request.Name && tag.TagCategoryId == categoryId)
+				.Where(tag => tag.Name == request.Name && tag.TagCategoryId == request.CategoryId)
 				.SingleOrDefaultAsync();
 			if (existingTag != null)
 				return HttpResult.Ok(existingTag.ToSafeExpandedWireFormat());
