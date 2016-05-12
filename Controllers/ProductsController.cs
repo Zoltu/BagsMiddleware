@@ -269,7 +269,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] String imageUrlString)
 		{
 			// FIXME: figure out how to get the image_url from the route as a decoded URI 
-			var imageUrl = new Uri(WebUtility.UrlDecode(imageUrlString));
+			Uri imageUrl;
+			try
+			{
+				imageUrl = new Uri(WebUtility.UrlDecode(imageUrlString));
+			}
+			catch (UriFormatException exception)
+			{
+				return HttpResult.BadRequest($"The image_url must be a valid URL: {imageUrlString}");
+			}
 
 			// validate input
 			if (!ModelState.IsValid)
@@ -328,7 +336,15 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] String purchaseUrlString)
 		{
 			// FIXME: figure out how to get the image_url from the route as a decoded URI 
-			var purchaseUrl = new Uri(WebUtility.UrlDecode(purchaseUrlString));
+			Uri purchaseUrl;
+			try
+			{
+				purchaseUrl = new Uri(WebUtility.UrlDecode(purchaseUrlString));
+			}
+			catch (UriFormatException exception)
+			{
+				return HttpResult.BadRequest($"The purchase_url must be a valid URL: {purchaseUrlString}");
+			}
 
 			// validate input
 			if (!ModelState.IsValid)
