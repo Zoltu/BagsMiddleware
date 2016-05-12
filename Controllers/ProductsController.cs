@@ -223,7 +223,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// locate product tag
 			var foundProductTag = await _bagsContext.ProductTags
-				.Where(productTag => productTag.Product == foundProduct && productTag.Tag == foundTag)
+				.Where(productTag => productTag.ProductId == foundProduct.Id && productTag.TagId == foundTag.Id)
 				.SingleOrDefaultAsync();
 			if (foundProductTag == null)
 				return HttpResult.NoContent();
