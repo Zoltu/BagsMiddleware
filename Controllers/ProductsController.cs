@@ -265,20 +265,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/image_url/{image_url}")]
-		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "image_url")] String imageUrlString)
+		[Route("{product_id:guid}/image_url")]
+		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "image_url")] Uri imageUrl)
 		{
-			// FIXME: figure out how to get the image_url from the route as a decoded URI 
-			Uri imageUrl;
-			try
-			{
-				imageUrl = new Uri(WebUtility.UrlDecode(imageUrlString));
-			}
-			catch (UriFormatException exception)
-			{
-				return HttpResult.BadRequest($"The image_url must be a valid URL: {imageUrlString}");
-			}
-
 			// validate input
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
@@ -332,20 +321,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/purchase_url/{purchase_url}")]
-		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "purchase_url")] String purchaseUrlString)
+		[Route("{product_id:guid}/purchase_url")]
+		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
 		{
-			// FIXME: figure out how to get the image_url from the route as a decoded URI 
-			Uri purchaseUrl;
-			try
-			{
-				purchaseUrl = new Uri(WebUtility.UrlDecode(purchaseUrlString));
-			}
-			catch (UriFormatException exception)
-			{
-				return HttpResult.BadRequest($"The purchase_url must be a valid URL: {purchaseUrlString}");
-			}
-
 			// validate input
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
