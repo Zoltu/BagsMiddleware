@@ -13,7 +13,7 @@ namespace Zoltu.BagsMiddleware
 {
 	public class Startup
 	{
-		private IConfigurationRoot _configuration { get; set; }
+		private IConfiguration _configuration { get; set; }
 		private IHostingEnvironment _hostingEnvironment { get; set; }
 
 		public Startup(IHostingEnvironment hostingEnvironment)
@@ -51,6 +51,8 @@ namespace Zoltu.BagsMiddleware
 
 		private void ConfigureCommonServices(IServiceCollection services)
 		{
+			services.AddSingleton(serviceProvider => _configuration);
+
 			// monitoring setup
 			services.AddApplicationInsightsTelemetry(_configuration);
 

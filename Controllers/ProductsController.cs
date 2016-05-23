@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.Data.Entity;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Zoltu.BagsMiddleware.Amazon;
 using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;
 
@@ -16,10 +18,23 @@ namespace Zoltu.BagsMiddleware.Controllers
 	public class ProductsController : Controller
     {
 		private BagsContext _bagsContext;
+		private RequestSigner _requestSigner;
+		private String _associateTag;
 
-		public ProductsController(BagsContext bagsContext)
+		public ProductsController(BagsContext bagsContext, IConfiguration configuration)
 		{
 			_bagsContext = bagsContext;
+
+			_associateTag = configuration["AmazonAssociateTag"];
+			if (_associateTag == null) throw new Exception("AmazonAssociateTag is missing.");
+
+			var accessKeyId = configuration["AmazonAccessKeyId"];
+			if (accessKeyId == null) throw new Exception("AmazonAccessKeyId");
+
+			var secretAccessKey = configuration["AmazonSecretAccessKey"];
+			if (secretAccessKey == null) throw new Exception("AmazonSecretAccessKey");
+
+			_requestSigner = new RequestSigner(accessKeyId, secretAccessKey, "ecs.amazonaws.com");
 		}
 
 		[HttpGet]
@@ -63,6 +78,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 			// FIXME: http://stackoverflow.com/questions/36834629/why-do-i-need-to-call-loadasync-before-querying-over-the-same
 			await _bagsContext.Products
 				.Include(product => product.Tags)
+				.Include(product => product.ImageUrls)
+				.Include(product => product.PurchaseUrls)
 				.LoadAsync();
 
 			// locate matching products
@@ -97,6 +114,91 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// create product
 			var newProduct = new Models.Product { Name = request.Name, Price = request.Price };
+			_bagsContext.Products.Add(newProduct);
+			await _bagsContext.SaveChangesAsync();
+
+			return HttpResult.Ok(newProduct.ToSafeExpandedWireFormat());
+		}
+
+		public class CreateProductFromAsinRequest
+		{
+			[JsonProperty(Required = Required.Always, PropertyName = "asin")]
+			public String Asin { get; set; }
+		}
+
+		[HttpPut]
+		[Route("amazon")]
+		public async Task<IActionResult> CreateProduct([FromBody] CreateProductFromAsinRequest request)
+		{
+			if (!ModelState.IsValid)
+				return HttpResult.BadRequest(ModelState);
+
+			var requestParameters = new Dictionary<String, String>
+			{
+				{ "IdType", "ASIN" },
+				{ "Operation", "ItemLookup" },
+				{ "ResponseGroup", "Images,Offers,ItemAttributes" },
+				{ "Service", "AWSECommerceService" },
+				{ "AssociateTag", _associateTag },
+				{ "ItemId", request.Asin }
+			};
+
+			var amazonRequestUri = _requestSigner.Sign(requestParameters);
+			var httpClient = new HttpClient();
+			var result = await httpClient.GetStringAsync(amazonRequestUri);
+
+			var xElement = XElement.Parse(result);
+			XNamespace ns = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
+			var item = xElement
+				.Elements(ns + "Items")
+				.Single()
+				.Elements(ns + "Item")
+				.Single();
+
+			var primaryImage = item
+				.Elements(ns + "LargeImage")
+				.Single()
+				.Elements(ns + "URL")
+				.Single()
+				.Value;
+
+			var images = item
+				.Elements(ns + "ImageSets")
+				.Single()
+				.Elements(ns + "ImageSet")
+				.Where(imageSet => imageSet.Attribute("Category")?.Value != "primary")
+				.Select(imageSet => imageSet
+					.Elements(ns + "LargeImage")
+					.Single()
+					.Elements(ns + "URL")
+					.Single()
+					.Value);
+			images = new[] { primaryImage }.Concat(images);
+
+			var lowestNewPrice = Double.Parse(item
+				.Elements(ns + "OfferSummary")
+				.Single()
+				.Elements(ns + "LowestNewPrice")
+				.Single()
+				.Elements(ns + "Amount")
+				.Single()
+				.Value) / 100;
+
+			var title = item
+				.Elements(ns + "ItemAttributes")
+				.Single()
+				.Elements(ns + "Title")
+				.Single()
+				.Value;
+
+			var affiliateLink = $"https://www.amazon.com/gp/product/{request.Asin}/?tag={_associateTag}";
+
+			// create product
+			var newProduct = new Models.Product { Name = title, Price = Convert.ToInt64(lowestNewPrice) };
+			var newImageUrls = images.Select(imageUrl => new Models.ProductImageUrl { Product = newProduct, Url = imageUrl });
+			var newPurchaseUrl = new Models.ProductPurchaseUrl { Product = newProduct, Url = affiliateLink };
+			newProduct.ImageUrls.AddRange(newImageUrls);
+			newProduct.PurchaseUrls.Add(newPurchaseUrl);
 			_bagsContext.Products.Add(newProduct);
 			await _bagsContext.SaveChangesAsync();
 
