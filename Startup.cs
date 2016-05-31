@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Data.Sqlite;
 using Swashbuckle.SwaggerGen.Generator;
 using System.IO;
+using BagsMiddleware.Extensions;
 
 namespace Zoltu.BagsMiddleware
 {
@@ -23,7 +24,7 @@ namespace Zoltu.BagsMiddleware
 			// Set up configuration sources.
 			_configuration = new ConfigurationBuilder()
 				.SetBasePath(_hostingEnvironment.ContentRootPath)
-				.AddUserSecrets()
+				.AddUserSecrets(_hostingEnvironment)
 				.AddApplicationInsightsSettings(developerMode: _hostingEnvironment.IsDevelopment())
 				.AddEnvironmentVariables()
 				.Build();
