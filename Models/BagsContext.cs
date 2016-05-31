@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Zoltu.BagsMiddleware.Models
 {
@@ -10,6 +10,8 @@ namespace Zoltu.BagsMiddleware.Models
 		public DbSet<ProductTag> ProductTags { get; set; }
 		public DbSet<ProductImageUrl> ProductImageUrls { get; set; }
 		public DbSet<ProductPurchaseUrl> ProductPurchaseUrls { get; set; }
+
+		public BagsContext(DbContextOptions<BagsContext> options) : base(options) { }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

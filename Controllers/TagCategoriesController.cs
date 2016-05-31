@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Zoltu.BagsMiddleware.Extensions;
 using Zoltu.BagsMiddleware.Models;

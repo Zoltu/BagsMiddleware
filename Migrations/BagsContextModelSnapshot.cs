@@ -1,13 +1,11 @@
 using System;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Migrations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Zoltu.BagsMiddleware.Models;
 
 namespace BagsMiddleware.Migrations
 {
-    [DbContext(typeof(BagsContext))]
+	[DbContext(typeof(BagsContext))]
     partial class BagsContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
