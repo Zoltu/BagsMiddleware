@@ -1,13 +1,14 @@
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc.Filters;
-using Microsoft.AspNet.Mvc.Formatters;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.SwaggerGen;
+using Microsoft.Data.Sqlite;
+using Swashbuckle.SwaggerGen.Generator;
+using System.IO;
 
 namespace Zoltu.BagsMiddleware
 {
@@ -21,6 +22,7 @@ namespace Zoltu.BagsMiddleware
 			_hostingEnvironment = hostingEnvironment;
 			// Set up configuration sources.
 			_configuration = new ConfigurationBuilder()
+				.SetBasePath(_hostingEnvironment.ContentRootPath)
 				.AddUserSecrets()
 				.AddApplicationInsightsSettings(developerMode: _hostingEnvironment.IsDevelopment())
 				.AddEnvironmentVariables()
@@ -34,7 +36,6 @@ namespace Zoltu.BagsMiddleware
 
 			// EntityFramework setup
 			services.AddEntityFramework()
-				.AddSqlServer()
 				.AddDbContext<Models.BagsContext>(options => options.UseSqlServer(_configuration["SqlServerConnectionString"]));
 		}
 
@@ -45,12 +46,12 @@ namespace Zoltu.BagsMiddleware
 
 			// EntityFramework setup
 			services.AddEntityFramework()
-				.AddSqlite()
 				.AddDbContext<Models.BagsContext>(options => options.UseSqlite(new SqliteConnection("Data Source=:memory:")));
 		}
 
 		private void ConfigureCommonServices(IServiceCollection services)
 		{
+			// make configuration available as a dependency
 			services.AddSingleton(serviceProvider => _configuration);
 
 			// monitoring setup
@@ -60,16 +61,16 @@ namespace Zoltu.BagsMiddleware
 			services.AddMvc(options =>
 			{
 				options.RespectBrowserAcceptHeader = true;
-				options.InputFormatters.Clear();
-				options.InputFormatters.Add(new JsonInputFormatter());
 				options.OutputFormatters.Insert(0, new HttpNotAcceptableOutputFormatter());
 				options.OutputFormatters.RemoveType<StringOutputFormatter>();
 			});
 
 			// Swashbuckle setup
-			services.AddSwaggerGen();
-			services.ConfigureSwaggerDocument(options => options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.BagsMiddleware" }));
-			services.ConfigureSwaggerSchema(options => options.DescribeAllEnumsAsStrings = true);
+			services.AddSwaggerGen(options =>
+			{
+				options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.BagsMiddleware" });
+				options.DescribeAllEnumsAsStrings();
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,6 +116,12 @@ namespace Zoltu.BagsMiddleware
 		}
 
 		// Entry point for the application.
-		public static void Main(string[] args) => Microsoft.AspNet.Hosting.WebApplication.Run<Startup>(args);
+		public static void Main(string[] args) => new WebHostBuilder()
+			.UseKestrel()
+			.UseContentRoot(Directory.GetCurrentDirectory())
+			.UseIISIntegration()
+			.UseStartup<Startup>()
+			.Build()
+			.Run();
 	}
 }

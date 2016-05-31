@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.Data.Entity.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BagsMiddleware.Migrations
 {
-    public partial class v1 : Migration
+	public partial class v1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
