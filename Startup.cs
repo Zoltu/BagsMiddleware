@@ -10,6 +10,8 @@ using Microsoft.Data.Sqlite;
 using Swashbuckle.SwaggerGen.Generator;
 using System.IO;
 using BagsMiddleware.Extensions;
+using BagsMiddleware.Monitoring;
+using Microsoft.AspNetCore.Http;
 
 namespace Zoltu.BagsMiddleware
 {
@@ -110,6 +112,7 @@ namespace Zoltu.BagsMiddleware
 
 			applicationBuilder.UseApplicationInsightsRequestTelemetry();
 			applicationBuilder.UseApplicationInsightsExceptionTelemetry();
+			applicationBuilder.UseApplicationInsightsInitializer(new RequestHeaderTelemetryInitializer(applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>()));
 			applicationBuilder.UseMvc();
 
 			applicationBuilder.UseSwaggerGen();
