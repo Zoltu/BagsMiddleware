@@ -19,7 +19,7 @@ namespace Zoltu.BagsMiddleware.Models
 
 		public List<ProductImageUrl> ImageUrls { get; set; } = new List<ProductImageUrl>();
 		public List<ProductPurchaseUrl> PurchaseUrls { get; set; } = new List<ProductPurchaseUrl>();
-		public List<Tag> Tags { get; set; } = new List<Tag>();
+		public List<ProductTag> Tags { get; set; } = new List<ProductTag>();
 
 		public dynamic ToBaseWireFormat()
 		{
@@ -35,7 +35,13 @@ namespace Zoltu.BagsMiddleware.Models
 			var result = ToBaseWireFormat();
 			result.image_urls = ImageUrls.Select(imageUrl => imageUrl.Url).ToList();
 			result.purchase_urls = PurchaseUrls.Select(purchaseUrl => purchaseUrl.Url).ToList();
-			result.tags = Tags.Select(tag => tag.ToSafeExpandedWireFormat()).ToList();
+			return result;
+		}
+
+		public dynamic ToUnsafeExpandedWireFormat()
+		{
+			var result = ToSafeExpandedWireFormat();
+			result.tags = Tags.Select(productTag => productTag.Tag).Select(tag => tag.ToSafeExpandedWireFormat()).ToList();
 			return result;
 		}
 	}
@@ -46,8 +52,14 @@ namespace Zoltu.BagsMiddleware.Models
 		{
 			return query
 				.Include(product => product.ImageUrls)
-				.Include(product => product.PurchaseUrls)
-				.Include(product => product.Tags).ThenInclude(tag => tag.TagCategory);
+				.Include(product => product.PurchaseUrls);
+		}
+
+		public static IQueryable<Product> WithUnsafeIncludes(this IQueryable<Product> query)
+		{
+			return query
+				.WithSafeIncludes()
+				.Include(product => product.Tags).ThenInclude(productTag => productTag.Tag.TagCategory);
 		}
 	}
 }

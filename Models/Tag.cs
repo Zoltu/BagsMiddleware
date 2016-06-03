@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace Zoltu.BagsMiddleware.Models
 		public Guid TagCategoryId { get; set; }
 		public TagCategory TagCategory { get; set; }
 
+		public List<ProductTag> Products { get; set; } = new List<ProductTag>();
+
 		public dynamic ToBaseWireFormat()
 		{
 			dynamic result = new ExpandoObject();
@@ -33,6 +36,13 @@ namespace Zoltu.BagsMiddleware.Models
 			result.category = TagCategory.ToBaseWireFormat();
 			return result;
 		}
+
+		public dynamic ToUnsafeExpandedWireFormat()
+		{
+			dynamic result = ToSafeExpandedWireFormat();
+			result.products = Products.Select(product => product.Product.ToSafeExpandedWireFormat());
+			return result;
+		}
 	}
 
 	public static class TagExtensions
@@ -41,6 +51,15 @@ namespace Zoltu.BagsMiddleware.Models
 		{
 			return query
 				.Include(tag => tag.TagCategory);
+		}
+
+		public static IQueryable<Tag> WithUnsafeIncludes(this IQueryable<Tag> query)
+		{
+			return query
+				.WithSafeIncludes()
+				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.ImageUrls)
+				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.PurchaseUrls)
+				.Include(tag => tag.Products).ThenInclude(productTag => productTag.Product).ThenInclude(product => product.Tags).ThenInclude(productTag => productTag.Tag).ThenInclude(tag => tag.TagCategory);
 		}
 	}
 }
