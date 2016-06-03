@@ -40,13 +40,13 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// locate tag
 			var foundTag = await _bagsContext.Tags
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(tag => tag.Id == tagId)
 				.SingleOrDefaultAsync();
 			if (foundTag == null)
 				return HttpResult.NotFound();
 
-			return HttpResult.Ok(foundTag.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundTag.ToSafeExpandedWireFormat());
 		}
 
 		public class CreateTagRequest
@@ -151,14 +151,16 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// locate tag
 			var foundTag = await _bagsContext.Tags
-				.Include(tag => tag.Products)
 				.Where(tag => tag.Id == tagId)
 				.SingleOrDefaultAsync();
 			if (foundTag == null)
 				return HttpResult.NoContent();
 
 			// validate it doesn't have any products
-			if (foundTag.Products.Any())
+			var foundProducts = await _bagsContext.Products
+				.Where(product => product.Tags.Contains(foundTag))
+				.ToListAsync();
+			if (foundProducts.Any())
 				return HttpResult.Conflict("Tag must have no associated products before it can be deleted.");
 
 			// delete

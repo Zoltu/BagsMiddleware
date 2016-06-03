@@ -8,7 +8,6 @@ namespace Zoltu.BagsMiddleware.Models
 		public DbSet<Product> Products { get; set; }
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<TagCategory> TagCategories { get; set; }
-		public DbSet<ProductTag> ProductTags { get; set; }
 		public DbSet<ProductImageUrl> ProductImageUrls { get; set; }
 		public DbSet<ProductPurchaseUrl> ProductPurchaseUrls { get; set; }
 
@@ -30,11 +29,6 @@ namespace Zoltu.BagsMiddleware.Models
 			// unique constraint on category name
 			modelBuilder.Entity<TagCategory>()
 				.HasIndex(category => category.Name)
-				.IsUnique(true);
-
-			// unique constraint on product tag
-			modelBuilder.Entity<ProductTag>()
-				.HasIndex(productTag => new { productTag.TagId, productTag.ProductId })
 				.IsUnique(true);
 		}
 	}

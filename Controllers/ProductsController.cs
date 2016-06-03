@@ -42,9 +42,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 		public async Task<IActionResult> GetProducts()
 		{
 			return HttpResult.Ok(await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(product => product.ToUnsafeExpandedWireFormat())
+				.Select(product => product.ToSafeExpandedWireFormat())
 				.ToList());
 		}
 
@@ -58,38 +58,31 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// locate product
 			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleOrDefaultAsync();
 			if (foundProduct == null)
 				return HttpResult.NotFound();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpGet]
 		[Route("by_tags")]
-		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds)
+		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> expectedTagIds)
 		{
 			// validate input
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
 
-			// FIXME: http://stackoverflow.com/questions/36834629/why-do-i-need-to-call-loadasync-before-querying-over-the-same
-			await _bagsContext.Products
-				.Include(product => product.Tags)
-				.Include(product => product.ImageUrls)
-				.Include(product => product.PurchaseUrls)
-				.LoadAsync();
-
 			// locate matching products
-			var matchingProducts = await _bagsContext.Products
+			var matchingProducts = _bagsContext.Products
 				.WithSafeIncludes()
-				.Where(product => tagIds
-					.All(expectedTagId => product.Tags
-						.Select(productTag => productTag.TagId)
-						.Contains(expectedTagId)))
-				.AsAsyncEnumerable()
+				.Where(product => expectedTagIds
+					.All(expectedTagId => product.Tags.Select(tag => tag.Id)
+						.Any(tagId => tagId == expectedTagId)))
+				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
+				.ToList()
 				.Select(product => product.ToSafeExpandedWireFormat())
 				.ToList();
 
@@ -223,7 +216,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// locate product
 			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleOrDefaultAsync();
 			if (foundProduct == null)
@@ -231,14 +224,14 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// verify there are changes
 			if (foundProduct.Name == request.Name && foundProduct.Price == request.Price)
-				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+				return HttpResult.Ok(foundProduct.ToSafeExpandedWireFormat());
 
 			// change name/price
 			foundProduct.Name = request.Name;
 			foundProduct.Price = request.Price;
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpDelete]
@@ -279,7 +272,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// validate product
 			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleOrDefaultAsync();
 			if (foundProduct == null)
@@ -294,11 +287,10 @@ namespace Zoltu.BagsMiddleware.Controllers
 				return HttpResult.NotFound($"{request.TagId}");
 
 			// link tag and product
-			var productTag = new Models.ProductTag { Product = foundProduct, Tag = foundTag };
-			_bagsContext.ProductTags.Add(productTag);
+			foundProduct.Tags.Add(foundTag);
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpDelete]
@@ -323,15 +315,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (foundTag == null)
 				return HttpResult.NotFound($"{tagId}");
 
-			// locate product tag
-			var foundProductTag = await _bagsContext.ProductTags
-				.Where(productTag => productTag.ProductId == foundProduct.Id && productTag.TagId == foundTag.Id)
-				.SingleOrDefaultAsync();
-			if (foundProductTag == null)
-				return HttpResult.NoContent();
-
 			// delete
-			_bagsContext.ProductTags.Remove(foundProductTag);
+			foundProduct.Tags.Remove(foundTag);
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.NoContent();
@@ -353,7 +338,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// validate product
 			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleOrDefaultAsync();
 			if (foundProduct == null)
@@ -363,7 +348,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { Product = foundProduct, Url = request.ImageUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpDelete]
@@ -409,7 +394,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			// validate product
 			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
+				.WithSafeIncludes()
 				.Where(product => product.Id == productId)
 				.SingleOrDefaultAsync();
 			if (foundProduct == null)
@@ -419,7 +404,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { Product = foundProduct, Url = request.PurchaseUrl.ToString() });
 			await _bagsContext.SaveChangesAsync();
 
-			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return Ok(foundProduct.ToSafeExpandedWireFormat());
 		}
 
 		[HttpDelete]
