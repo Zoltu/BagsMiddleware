@@ -75,22 +75,16 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
 
-			// FIXME: http://stackoverflow.com/questions/36834629/why-do-i-need-to-call-loadasync-before-querying-over-the-same
-			await _bagsContext.Products
-				.Include(product => product.Tags)
-				.Include(product => product.ImageUrls)
-				.Include(product => product.PurchaseUrls)
-				.LoadAsync();
-
 			// locate matching products
-			var matchingProducts = await _bagsContext.Products
-				.WithSafeIncludes()
+			var matchingProducts = _bagsContext.Products
+				.WithUnsafeIncludes()
 				.Where(product => tagIds
 					.All(expectedTagId => product.Tags
 						.Select(productTag => productTag.TagId)
 						.Contains(expectedTagId)))
-				.AsAsyncEnumerable()
-				.Select(product => product.ToSafeExpandedWireFormat())
+				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
+				.ToList()
+				.Select(product => product.ToUnsafeExpandedWireFormat())
 				.ToList();
 
 			return HttpResult.Ok(matchingProducts);
