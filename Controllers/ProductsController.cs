@@ -98,25 +98,9 @@ SELECT product.Id as Id, product.Name as Name, product.Price as Price
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
 				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
-				.Select(product => new
-				{
-					id = product.Id,
-					name = product.Name,
-					price = product.Price,
-					image_urls = product.ImageUrls.Select(imageUrl => imageUrl.Url),
-					purchase_urls = product.PurchaseUrls.Select(purchaseUrl => purchaseUrl.Url),
-					tags = product.Tags.Select(productTag => productTag.Tag).Select(tag => new
-					{
-						id = tag.Id,
-						name = tag.Name,
-						category = new
-						{
-							id = tag.TagCategory.Id,
-							name = tag.TagCategory.Name
-						}
-					})
-				})
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
+				.ToList()
+				.Select(product => product.ToUnsafeExpandedWireFormat())
 				.ToList();
 
 			return HttpResult.Ok(matchingProducts);
@@ -201,7 +185,7 @@ SELECT product.Id as Id, product.Name as Name, product.Price as Price
 					.Value);
 			images = new[] { primaryImage }
 				.Concat(images)
-				.Select(image => new UriBuilder(image) { Scheme = "https", Port = -1 }.ToString());
+				.Distinct();
 
 			var lowestNewPrice = Double.Parse(item
 				.Elements(ns + "OfferSummary")
@@ -230,7 +214,7 @@ SELECT product.Id as Id, product.Name as Name, product.Price as Price
 			_bagsContext.Products.Add(newProduct);
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(newProduct.ToSafeExpandedWireFormat());
+			return HttpResult.Ok(newProduct.ToUnsafeExpandedWireFormat());
 		}
 
 		public class EditProductRequest
