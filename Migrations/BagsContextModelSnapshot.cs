@@ -1,17 +1,19 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Zoltu.BagsMiddleware.Models;
 
 namespace BagsMiddleware.Migrations
 {
-	[DbContext(typeof(BagsContext))]
+    [DbContext(typeof(BagsContext))]
     partial class BagsContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348");
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.Product", b =>
                 {
@@ -24,6 +26,8 @@ namespace BagsMiddleware.Migrations
                     b.Property<long>("Price");
 
                     b.HasKey("Id");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductImageUrl", b =>
@@ -37,6 +41,10 @@ namespace BagsMiddleware.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImageUrls");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductPurchaseUrl", b =>
@@ -50,6 +58,10 @@ namespace BagsMiddleware.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductPurchaseUrls");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductTag", b =>
@@ -63,8 +75,14 @@ namespace BagsMiddleware.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TagId");
+
                     b.HasIndex("TagId", "ProductId")
                         .IsUnique();
+
+                    b.ToTable("ProductTags");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.Tag", b =>
@@ -79,8 +97,12 @@ namespace BagsMiddleware.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TagCategoryId");
+
                     b.HasIndex("Name", "TagCategoryId")
                         .IsUnique();
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.TagCategory", b =>
@@ -95,38 +117,45 @@ namespace BagsMiddleware.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.ToTable("TagCategories");
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductImageUrl", b =>
                 {
                     b.HasOne("Zoltu.BagsMiddleware.Models.Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductPurchaseUrl", b =>
                 {
                     b.HasOne("Zoltu.BagsMiddleware.Models.Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.ProductTag", b =>
                 {
                     b.HasOne("Zoltu.BagsMiddleware.Models.Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Zoltu.BagsMiddleware.Models.Tag")
                         .WithMany()
-                        .HasForeignKey("TagId");
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.Tag", b =>
                 {
                     b.HasOne("Zoltu.BagsMiddleware.Models.TagCategory")
                         .WithMany()
-                        .HasForeignKey("TagCategoryId");
+                        .HasForeignKey("TagCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

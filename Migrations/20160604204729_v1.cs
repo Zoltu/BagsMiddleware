@@ -1,14 +1,15 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BagsMiddleware.Migrations
 {
-	public partial class v1 : Migration
+    public partial class v1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Product",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -17,10 +18,11 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Product", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
-                name: "TagCategory",
+                name: "TagCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -28,11 +30,11 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TagCategory", x => x.Id);
-                    table.UniqueConstraint("AK_TagCategory_Name", x => x.Name);
+                    table.PrimaryKey("PK_TagCategories", x => x.Id);
                 });
+
             migrationBuilder.CreateTable(
-                name: "ProductImageUrl",
+                name: "ProductImageUrls",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -41,16 +43,17 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductImageUrl", x => x.Id);
+                    table.PrimaryKey("PK_ProductImageUrls", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductImageUrl_Product_ProductId",
+                        name: "FK_ProductImageUrls_Products_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
             migrationBuilder.CreateTable(
-                name: "ProductPurchaseUrl",
+                name: "ProductPurchaseUrls",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -59,16 +62,17 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductPurchaseUrl", x => x.Id);
+                    table.PrimaryKey("PK_ProductPurchaseUrls", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductPurchaseUrl_Product_ProductId",
+                        name: "FK_ProductPurchaseUrls_Products_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
             migrationBuilder.CreateTable(
-                name: "Tag",
+                name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -77,17 +81,17 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Id);
-                    table.UniqueConstraint("AK_Tag_Name_TagCategoryId", x => new { x.Name, x.TagCategoryId });
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tag_TagCategory_TagCategoryId",
+                        name: "FK_Tags_TagCategories_TagCategoryId",
                         column: x => x.TagCategoryId,
-                        principalTable: "TagCategory",
+                        principalTable: "TagCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
             migrationBuilder.CreateTable(
-                name: "ProductTag",
+                name: "ProductTags",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -96,31 +100,84 @@ namespace BagsMiddleware.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductTag", x => x.Id);
-                    table.UniqueConstraint("AK_ProductTag_TagId_ProductId", x => new { x.TagId, x.ProductId });
+                    table.PrimaryKey("PK_ProductTags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductTag_Product_ProductId",
+                        name: "FK_ProductTags_Products_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProductTag_Tag_TagId",
+                        name: "FK_ProductTags_Tags_TagId",
                         column: x => x.TagId,
-                        principalTable: "Tag",
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductImageUrls_ProductId",
+                table: "ProductImageUrls",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPurchaseUrls_ProductId",
+                table: "ProductPurchaseUrls",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTags_ProductId",
+                table: "ProductTags",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTags_TagId",
+                table: "ProductTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTags_TagId_ProductId",
+                table: "ProductTags",
+                columns: new[] { "TagId", "ProductId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_TagCategoryId",
+                table: "Tags",
+                column: "TagCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_Name_TagCategoryId",
+                table: "Tags",
+                columns: new[] { "Name", "TagCategoryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TagCategories_Name",
+                table: "TagCategories",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable("ProductImageUrl");
-            migrationBuilder.DropTable("ProductPurchaseUrl");
-            migrationBuilder.DropTable("ProductTag");
-            migrationBuilder.DropTable("Product");
-            migrationBuilder.DropTable("Tag");
-            migrationBuilder.DropTable("TagCategory");
+            migrationBuilder.DropTable(
+                name: "ProductImageUrls");
+
+            migrationBuilder.DropTable(
+                name: "ProductPurchaseUrls");
+
+            migrationBuilder.DropTable(
+                name: "ProductTags");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "TagCategories");
         }
     }
 }

@@ -78,21 +78,21 @@ namespace Zoltu.BagsMiddleware.Controllers
 			var tagIdsList = tagIds.ToList();
 
 			var query = @"
-SELECT product.Id as Id, product.Name as Name, product.Price as Price
-	FROM ProductTag productTag0
+SELECT products.Id as Id, products.Name as Name, products.Price as Price
+	FROM ProductTags productTags0
 	";
 			query += String.Join("\r\n	", tagIds
 				.Select((guid, i) => new { guid, i })
 				.Skip(1)
-				.Select(item => $"JOIN ProductTag productTag{item.i} ON productTag0.ProductId = productTag{item.i}.ProductId"));
+				.Select(item => $"JOIN ProductTags productTags{item.i} ON productTags0.ProductId = productTags{item.i}.ProductId"));
 			query += @"
-	JOIN Product product ON productTag0.ProductId = product.Id
+	JOIN Products products ON productTags0.ProductId = products.Id
 	";
 			if (tagIds.Count() != 0)
 				query += "WHERE ";
 			query += String.Join("\r\n		AND ", tagIds
 				.Select((guid, i) => new { guid, i })
-				.Select(item => $"productTag{item.i}.TagId = @p{item.i}"));
+				.Select(item => $"productTags{item.i}.TagId = @p{item.i}"));
 
 			// locate matching products
 			var matchingProducts = _bagsContext.Products

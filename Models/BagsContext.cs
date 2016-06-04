@@ -16,12 +16,6 @@ namespace Zoltu.BagsMiddleware.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			// TODO: do a migration to rename the tables to match RC2 naming convention see: https://docs.efproject.net/en/latest/miscellaneous/rc1-rc2-upgrade.html#table-naming-convention-changes
-			foreach (var entity in modelBuilder.Model.GetEntityTypes())
-			{
-				entity.Relational().TableName = entity.DisplayName();
-			}
-
 			// unique constraint on tag name & category
 			modelBuilder.Entity<Tag>()
 				.HasIndex(tag => new { tag.Name, tag.TagCategoryId })
