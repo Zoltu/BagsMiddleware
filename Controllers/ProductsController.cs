@@ -167,7 +167,9 @@ namespace Zoltu.BagsMiddleware.Controllers
 					.Elements(ns + "URL")
 					.Single()
 					.Value);
-			images = new[] { primaryImage }.Concat(images);
+			images = new[] { primaryImage }
+				.Concat(images)
+				.Select(image => new UriBuilder(image) { Scheme = "https", Port = -1 }.ToString());
 
 			var lowestNewPrice = Double.Parse(item
 				.Elements(ns + "OfferSummary")
