@@ -75,16 +75,48 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
 
+			var tagIdsList = tagIds.ToList();
+
+			var query = @"
+SELECT product.Id as Id, product.Name as Name, product.Price as Price
+	FROM ProductTag productTag0
+	";
+			query += String.Join("\r\n	", tagIds
+				.Select((guid, i) => new { guid, i })
+				.Skip(1)
+				.Select(item => $"JOIN ProductTag productTag{item.i} ON productTag0.ProductId = productTag{item.i}.ProductId"));
+			query += @"
+	JOIN Product product ON productTag0.ProductId = product.Id
+	";
+			if (tagIds.Count() != 0)
+				query += "WHERE ";
+			query += String.Join("\r\n		AND ", tagIds
+				.Select((guid, i) => new { guid, i })
+				.Select(item => $"productTag{item.i}.TagId = @p{item.i}"));
+
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
-				.Where(product => tagIds
-					.All(expectedTagId => product.Tags
-						.Select(productTag => productTag.TagId)
-						.Contains(expectedTagId)))
+				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
+				.Select(product => new
+				{
+					id = product.Id,
+					name = product.Name,
+					price = product.Price,
+					image_urls = product.ImageUrls.Select(imageUrl => imageUrl.Url),
+					purchase_urls = product.PurchaseUrls.Select(purchaseUrl => purchaseUrl.Url),
+					tags = product.Tags.Select(productTag => productTag.Tag).Select(tag => new
+					{
+						id = tag.Id,
+						name = tag.Name,
+						category = new
+						{
+							id = tag.TagCategory.Id,
+							name = tag.TagCategory.Name
+						}
+					})
+				})
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
-				.ToList()
-				.Select(product => product.ToUnsafeExpandedWireFormat())
 				.ToList();
 
 			return HttpResult.Ok(matchingProducts);
