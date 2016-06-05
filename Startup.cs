@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Data.Sqlite;
 using Swashbuckle.SwaggerGen.Generator;
 using System.IO;
 using BagsMiddleware.Extensions;
@@ -35,25 +34,6 @@ namespace Zoltu.BagsMiddleware
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			ConfigureCommonServices(services);
-
-			// EntityFramework setup
-			services.AddEntityFramework()
-				.AddDbContext<Models.BagsContext>(options => options.UseSqlServer(_configuration["SqlServerConnectionString"]));
-		}
-
-		// This method gets called by the runtime in development. Use this method to add services to the container.
-		public void ConfigureDevelopmentServices(IServiceCollection services)
-		{
-			ConfigureCommonServices(services);
-
-			// EntityFramework setup
-			services.AddEntityFramework()
-				.AddDbContext<Models.BagsContext>(options => options.UseSqlite(new SqliteConnection("Data Source=:memory:")));
-		}
-
-		private void ConfigureCommonServices(IServiceCollection services)
-		{
 			// make configuration available as a dependency
 			services.AddSingleton(serviceProvider => _configuration);
 
@@ -74,39 +54,19 @@ namespace Zoltu.BagsMiddleware
 				options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.BagsMiddleware" });
 				options.DescribeAllEnumsAsStrings();
 			});
+
+			// EntityFramework setup
+			services.AddEntityFramework()
+				.AddDbContext<Models.BagsContext>(options => options.UseSqlServer(_configuration["SqlServerConnectionString"]));
+
+			/* The following block is for testing against an in-memory database */
+			// EntityFramework setup
+			//services.AddEntityFramework()
+			//	.AddDbContext<Models.BagsContext>(options => options.UseSqlite(new SqliteConnection("Data Source=:memory:")));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
-		{
-			ConfigureCommon(applicationBuilder, hostingEnvironment, loggerFactory);
-
-			// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
-			var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-			using (var serviceScope = serviceScopeFactory.CreateScope())
-			{
-				var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
-				dbContext.Database.Migrate();
-			}
-		}
-
-		public void ConfigureDevelopment(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
-		{
-			ConfigureCommon(applicationBuilder, hostingEnvironment, loggerFactory);
-
-			// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
-			var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-			using (var serviceScope = serviceScopeFactory.CreateScope())
-			{
-				var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
-				// intentionally leak this connection so the in-memory database doesn't shut down
-				dbContext.Database.OpenConnection();
-				dbContext.Database.EnsureDeleted();
-				dbContext.Database.EnsureCreated();
-			}
-		}
-
-		private void ConfigureCommon(IApplicationBuilder applicationBuilder, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
 		{
 			loggerFactory.AddConsole(minLevel: LogLevel.Information);
 
@@ -119,6 +79,26 @@ namespace Zoltu.BagsMiddleware
 
 			applicationBuilder.UseSwaggerGen();
 			applicationBuilder.UseSwaggerUi();
+
+			// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
+			var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+			using (var serviceScope = serviceScopeFactory.CreateScope())
+			{
+				var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
+				dbContext.Database.Migrate();
+			}
+
+			/* The following block is for testing against an in-memory database */
+			//// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
+			//var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+			//using (var serviceScope = serviceScopeFactory.CreateScope())
+			//{
+			//	var dbContext = serviceScope.ServiceProvider.GetService<Models.BagsContext>();
+			//	// intentionally leak this connection so the in-memory database doesn't shut down
+			//	dbContext.Database.OpenConnection();
+			//	dbContext.Database.EnsureDeleted();
+			//	dbContext.Database.EnsureCreated();
+			//}
 		}
 
 		// Entry point for the application.
