@@ -69,7 +69,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 		[HttpGet]
 		[Route("by_tags")]
-		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds)
+		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -78,7 +78,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			var tagIdsList = tagIds.ToList();
 
 			var query = @"
-SELECT products.Id as Id, products.Name as Name, products.Price as Price
+SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Price
 	FROM ProductTags productTags0
 	";
 			query += String.Join("\r\n	", tagIds
@@ -86,7 +86,7 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 				.Skip(1)
 				.Select(item => $"JOIN ProductTags productTags{item.i} ON productTags0.ProductId = productTags{item.i}.ProductId"));
 			query += @"
-	JOIN Products products ON productTags0.ProductId = products.Id
+	INNER JOIN Products products ON productTags0.ProductId = products.Id
 	";
 			if (tagIds.Count() != 0)
 				query += "WHERE ";
@@ -94,10 +94,15 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 				.Select((guid, i) => new { guid, i })
 				.Select(item => $"productTags{item.i}.TagId = @p{item.i}"));
 
+			// typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
+			Int32 startingId32 = startingId;
+
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
 				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
+				.Where(product => product.Id >= startingId32)
+				.Take(itemsPerPage)
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
 				.Select(product => product.ToUnsafeExpandedWireFormat())
