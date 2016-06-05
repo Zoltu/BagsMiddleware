@@ -14,7 +14,7 @@ namespace Zoltu.BagsMiddleware.Models
 		public Guid TagId { get; set; }
 		public Tag Tag { get; set; }
 		[Required]
-		public Guid ProductId { get; set; }
+		public Int32 ProductId { get; set; }
 		public Product Product { get; set; }
     }
 

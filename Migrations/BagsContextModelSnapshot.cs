@@ -13,11 +13,12 @@ namespace BagsMiddleware.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
+                .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Zoltu.BagsMiddleware.Models.Product", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
@@ -35,7 +36,7 @@ namespace BagsMiddleware.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("ProductId");
+                    b.Property<int>("ProductId");
 
                     b.Property<string>("Url")
                         .IsRequired();
@@ -52,7 +53,7 @@ namespace BagsMiddleware.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("ProductId");
+                    b.Property<int>("ProductId");
 
                     b.Property<string>("Url")
                         .IsRequired();
@@ -69,7 +70,7 @@ namespace BagsMiddleware.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("ProductId");
+                    b.Property<int>("ProductId");
 
                     b.Property<Guid>("TagId");
 

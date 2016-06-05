@@ -110,6 +110,8 @@ namespace Zoltu.BagsMiddleware
 		{
 			loggerFactory.AddConsole(minLevel: LogLevel.Information);
 
+			applicationBuilder.UseCors(policyBuilder => policyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 			applicationBuilder.UseApplicationInsightsRequestTelemetry();
 			applicationBuilder.UseApplicationInsightsExceptionTelemetry();
 			applicationBuilder.UseApplicationInsightsInitializer(new RequestHeaderTelemetryInitializer(applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>()));

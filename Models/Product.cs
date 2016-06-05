@@ -10,7 +10,7 @@ namespace Zoltu.BagsMiddleware.Models
 	public class Product
 	{
 		[Key]
-		public Guid Id { get; set; }
+		public Int32 Id { get; set; }
 
 		[Required]
 		public String Name { get; set; }

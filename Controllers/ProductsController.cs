@@ -49,8 +49,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpGet]
-		[Route("{product_id:guid}")]
-		public async Task<IActionResult> GetProduct([FromRoute(Name = "product_id")] Guid productId)
+		[Route("{product_id:int}")]
+		public async Task<IActionResult> GetProduct([FromRoute(Name = "product_id")] Int32 productId)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -226,8 +226,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}")]
-		public async Task<IActionResult> EditProduct([FromRoute(Name = "product_id")] Guid productId, [FromBody] EditProductRequest request)
+		[Route("{product_id:int}")]
+		public async Task<IActionResult> EditProduct([FromRoute(Name = "product_id")] Int32 productId, [FromBody] EditProductRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -254,8 +254,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}")]
-		public async Task<IActionResult> DeleteProduct([FromRoute(Name = "product_id")] Guid productId)
+		[Route("{product_id:int}")]
+		public async Task<IActionResult> DeleteProduct([FromRoute(Name = "product_id")] Int32 productId)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -282,8 +282,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/tag")]
-		public async Task<IActionResult> AddTag([FromRoute(Name = "product_id")] Guid productId, [FromBody] AddTagRequest request)
+		[Route("{product_id:int}/tag")]
+		public async Task<IActionResult> AddTag([FromRoute(Name = "product_id")] Int32 productId, [FromBody] AddTagRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -314,8 +314,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/tag/{tag_id:guid}")]
-		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Guid productId, [FromRoute(Name = "tag_id")] Guid tagId)
+		[Route("{product_id:int}/tag/{tag_id:guid}")]
+		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Int32 productId, [FromRoute(Name = "tag_id")] Guid tagId)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -356,8 +356,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/image_url")]
-		public async Task<IActionResult> AddImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromBody] AddImageUrlRequest request)
+		[Route("{product_id:int}/image_url")]
+		public async Task<IActionResult> AddImageUrl([FromRoute(Name = "product_id")] Int32 productId, [FromBody] AddImageUrlRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -379,8 +379,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/image_url")]
-		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "image_url")] Uri imageUrl)
+		[Route("{product_id:int}/image_url")]
+		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Int32 productId, [FromQuery(Name = "image_url")] Uri imageUrl)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -412,8 +412,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpPut]
-		[Route("{product_id:guid}/purchase_url")]
-		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromBody] AddPurchaseUrlRequest request)
+		[Route("{product_id:int}/purchase_url")]
+		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Int32 productId, [FromBody] AddPurchaseUrlRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -435,8 +435,8 @@ SELECT products.Id as Id, products.Name as Name, products.Price as Price
 		}
 
 		[HttpDelete]
-		[Route("{product_id:guid}/purchase_url")]
-		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Guid productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
+		[Route("{product_id:int}/purchase_url")]
+		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Int32 productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
 		{
 			// validate input
 			if (!ModelState.IsValid)
