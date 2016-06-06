@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +17,14 @@ namespace Zoltu.BagsMiddleware.Controllers
 	public class ProductsController : Controller
     {
 		private BagsContext _bagsContext;
-		private RequestSigner _requestSigner;
-		private String _associateTag;
+		private AmazonUtilities _amazon;
 
 		public ProductsController(BagsContext bagsContext, IConfiguration configuration)
 		{
 			_bagsContext = bagsContext;
 
-			_associateTag = configuration["AmazonAssociateTag"];
-			if (_associateTag == null) throw new Exception("AmazonAssociateTag is missing.");
+			var associateTag = configuration["AmazonAssociateTag"];
+			if (associateTag == null) throw new Exception("AmazonAssociateTag is missing.");
 
 			var accessKeyId = configuration["AmazonAccessKeyId"];
 			if (accessKeyId == null) throw new Exception("AmazonAccessKeyId");
@@ -34,7 +32,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			var secretAccessKey = configuration["AmazonSecretAccessKey"];
 			if (secretAccessKey == null) throw new Exception("AmazonSecretAccessKey");
 
-			_requestSigner = new RequestSigner(accessKeyId, secretAccessKey, "ecs.amazonaws.com");
+			_amazon = new AmazonUtilities(accessKeyId, secretAccessKey, associateTag);
 		}
 
 		[HttpGet]
@@ -44,7 +42,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			return HttpResult.Ok(await _bagsContext.Products
 				.WithUnsafeIncludes()
 				.AsAsyncEnumerable()
-				.Select(product => product.ToUnsafeExpandedWireFormat())
+				.Select(product => product.ToUnsafeExpandedWireFormat(_amazon))
 				.ToList());
 		}
 
@@ -64,7 +62,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			if (foundProduct == null)
 				return HttpResult.NotFound();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
 		}
 
 		[HttpGet]
@@ -78,7 +76,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 			var tagIdsList = tagIds.ToList();
 
 			var query = @"
-SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Price
+SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Price, products.ImagesJson as ImagesJson, products.Asin as Asin
 	FROM ProductTags productTags0
 	";
 			query += String.Join("\r\n	", tagIds
@@ -94,7 +92,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Select((guid, i) => new { guid, i })
 				.Select(item => $"productTags{item.i}.TagId = @p{item.i}"));
 
-			// typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
+			// FIXME: typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
 			Int32 startingId32 = startingId;
 
 			// locate matching products
@@ -105,7 +103,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Take(itemsPerPage)
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
-				.Select(product => product.ToUnsafeExpandedWireFormat())
+				.Select(product => product.ToUnsafeExpandedWireFormat(_amazon))
 				.ToList();
 
 			return HttpResult.Ok(matchingProducts);
@@ -117,22 +115,6 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			public String Name { get; set; }
 			[JsonProperty(Required = Required.Always, PropertyName = "price")]
 			public UInt32 Price { get; set; }
-		}
-
-		[HttpPut]
-		[Route("")]
-		public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
-		{
-			// validate input
-			if (!ModelState.IsValid)
-				return HttpResult.BadRequest(ModelState);
-
-			// create product
-			var newProduct = new Models.Product { Name = request.Name, Price = request.Price };
-			_bagsContext.Products.Add(newProduct);
-			await _bagsContext.SaveChangesAsync();
-
-			return HttpResult.Ok(newProduct.ToSafeExpandedWireFormat());
 		}
 
 		public class CreateProductFromAsinRequest
@@ -148,20 +130,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
 
-			var requestParameters = new Dictionary<String, String>
-			{
-				{ "IdType", "ASIN" },
-				{ "Operation", "ItemLookup" },
-				{ "ResponseGroup", "Images,Offers,ItemAttributes" },
-				{ "Service", "AWSECommerceService" },
-				{ "AssociateTag", _associateTag },
-				{ "ItemId", request.Asin }
-			};
-
-			var amazonRequestUri = _requestSigner.Sign(requestParameters);
-			var httpClient = new HttpClient();
-			var result = await httpClient.GetStringAsync(amazonRequestUri);
-
+			var result = await _amazon.GetProductDetailsXml(request.Asin);
 			var xElement = XElement.Parse(result);
 			XNamespace ns = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
 			var item = xElement
@@ -170,27 +139,18 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Elements(ns + "Item")
 				.Single();
 
-			var primaryImage = item
-				.Elements(ns + "LargeImage")
-				.Single()
-				.Elements(ns + "URL")
-				.Single()
-				.Value;
-
 			var images = item
 				.Elements(ns + "ImageSets")
 				.Single()
 				.Elements(ns + "ImageSet")
-				.Where(imageSet => imageSet.Attribute("Category")?.Value != "primary")
-				.Select(imageSet => imageSet
-					.Elements(ns + "LargeImage")
-					.Single()
-					.Elements(ns + "URL")
-					.Single()
-					.Value);
-			images = new[] { primaryImage }
-				.Concat(images)
-				.Distinct();
+				.Select(imageSet => new Product.Image
+				{
+					Priority = (imageSet.Attribute("Category")?.Value == "primary") ? 10U : 100U,
+					Small = imageSet.Elements(ns + "SmallImage").Single().Elements(ns + "URL").Single().Value,
+					Medium = imageSet.Elements(ns + "MediumImage").Single().Elements(ns + "URL").Single().Value,
+					Large = imageSet.Elements(ns + "LargeImage").Single().Elements(ns + "URL").Single().Value
+				})
+				.OrderBy(image => image.Priority);
 
 			var lowestNewPrice = Double.Parse(item
 				.Elements(ns + "OfferSummary")
@@ -208,18 +168,16 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Single()
 				.Value;
 
-			var affiliateLink = $"https://www.amazon.com/gp/product/{request.Asin}/?tag={_associateTag}";
+			var affiliateLink = _amazon.CreateAssociateLink(request.Asin);
 
 			// create product
-			var newProduct = new Models.Product { Name = title, Price = Convert.ToInt64(lowestNewPrice) };
-			var newImageUrls = images.Select(imageUrl => new Models.ProductImageUrl { Product = newProduct, Url = imageUrl });
+			var newProduct = new Models.Product { Name = title, Price = Convert.ToInt64(lowestNewPrice), Asin = request.Asin, ImagesJson = JsonConvert.SerializeObject(images) };
 			var newPurchaseUrl = new Models.ProductPurchaseUrl { Product = newProduct, Url = affiliateLink };
-			newProduct.ImageUrls.AddRange(newImageUrls);
 			newProduct.PurchaseUrls.Add(newPurchaseUrl);
 			_bagsContext.Products.Add(newProduct);
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(newProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(newProduct.ToUnsafeExpandedWireFormat(_amazon));
 		}
 
 		public class EditProductRequest
@@ -228,6 +186,10 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			public String Name { get; set; }
 			[JsonProperty(Required = Required.Always, PropertyName = "price")]
 			public UInt32 Price { get; set; }
+			[JsonProperty(Required = Required.Default, PropertyName = "asin")]
+			public String Asin { get; set; }
+			[JsonProperty(Required = Required.Default, PropertyName = "images")]
+			public IEnumerable<Product.Image> Images { get; set; }
 		}
 
 		[HttpPut]
@@ -248,14 +210,18 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 			// verify there are changes
 			if (foundProduct.Name == request.Name && foundProduct.Price == request.Price)
-				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
 
-			// change name/price
+			// update the product
 			foundProduct.Name = request.Name;
 			foundProduct.Price = request.Price;
+			if (request.Asin != null)
+				foundProduct.Asin = request.Asin;
+			if (request.Images != null)
+				foundProduct.ImagesJson = JsonConvert.SerializeObject(request.Images);
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
 		}
 
 		[HttpDelete]
@@ -315,7 +281,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			_bagsContext.ProductTags.Add(productTag);
 			await _bagsContext.SaveChangesAsync();
 
-			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat());
+			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
 		}
 
 		[HttpDelete]
@@ -349,118 +315,6 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 			// delete
 			_bagsContext.ProductTags.Remove(foundProductTag);
-			await _bagsContext.SaveChangesAsync();
-
-			return HttpResult.NoContent();
-		}
-
-		public class AddImageUrlRequest
-		{
-			[JsonProperty(Required = Required.Always, PropertyName = "uri")]
-			public Uri ImageUrl { get; set; }
-		}
-
-		[HttpPut]
-		[Route("{product_id:int}/image_url")]
-		public async Task<IActionResult> AddImageUrl([FromRoute(Name = "product_id")] Int32 productId, [FromBody] AddImageUrlRequest request)
-		{
-			// validate input
-			if (!ModelState.IsValid)
-				return HttpResult.BadRequest(ModelState);
-
-			// validate product
-			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
-				.Where(product => product.Id == productId)
-				.SingleOrDefaultAsync();
-			if (foundProduct == null)
-				return HttpResult.NotFound();
-
-			// create linked image URL
-			_bagsContext.ProductImageUrls.Add(new Models.ProductImageUrl { Product = foundProduct, Url = request.ImageUrl.ToString() });
-			await _bagsContext.SaveChangesAsync();
-
-			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
-		}
-
-		[HttpDelete]
-		[Route("{product_id:int}/image_url")]
-		public async Task<IActionResult> RemoveImageUrl([FromRoute(Name = "product_id")] Int32 productId, [FromQuery(Name = "image_url")] Uri imageUrl)
-		{
-			// validate input
-			if (!ModelState.IsValid)
-				return HttpResult.BadRequest(ModelState);
-
-			// validate product
-			var foundProduct = await _bagsContext.Products
-				.Include(product => product.ImageUrls)
-				.Where(product => product.Id == productId)
-				.SingleOrDefaultAsync();
-			if (foundProduct == null)
-				return HttpResult.NotFound();
-
-			// locate image URL
-			var foundProductImages = foundProduct.ImageUrls
-				.Where(productImageUrl => productImageUrl.Url == imageUrl.ToString());
-
-			// remove the matching product images
-			_bagsContext.ProductImageUrls.RemoveRange(foundProductImages);
-			await _bagsContext.SaveChangesAsync();
-
-			return HttpResult.NoContent();
-		}
-
-		public class AddPurchaseUrlRequest
-		{
-			[JsonProperty(Required = Required.Always, PropertyName = "uri")]
-			public Uri PurchaseUrl { get; set; }
-		}
-
-		[HttpPut]
-		[Route("{product_id:int}/purchase_url")]
-		public async Task<IActionResult> AddPurchaseUrl([FromRoute(Name = "product_id")] Int32 productId, [FromBody] AddPurchaseUrlRequest request)
-		{
-			// validate input
-			if (!ModelState.IsValid)
-				return HttpResult.BadRequest(ModelState);
-
-			// validate product
-			var foundProduct = await _bagsContext.Products
-				.WithUnsafeIncludes()
-				.Where(product => product.Id == productId)
-				.SingleOrDefaultAsync();
-			if (foundProduct == null)
-				return HttpResult.NotFound();
-
-			// create linked purchase URL
-			_bagsContext.ProductPurchaseUrls.Add(new Models.ProductPurchaseUrl { Product = foundProduct, Url = request.PurchaseUrl.ToString() });
-			await _bagsContext.SaveChangesAsync();
-
-			return Ok(foundProduct.ToUnsafeExpandedWireFormat());
-		}
-
-		[HttpDelete]
-		[Route("{product_id:int}/purchase_url")]
-		public async Task<IActionResult> RemovePurchaseUrl([FromRoute(Name = "product_id")] Int32 productId, [FromQuery(Name = "purchase_url")] Uri purchaseUrl)
-		{
-			// validate input
-			if (!ModelState.IsValid)
-				return HttpResult.BadRequest(ModelState);
-
-			// validate product
-			var foundProduct = await _bagsContext.Products
-				.Include(product => product.PurchaseUrls)
-				.Where(product => product.Id == productId)
-				.SingleOrDefaultAsync();
-			if (foundProduct == null)
-				return HttpResult.NotFound();
-
-			// locate image URL
-			var foundProductPurchaseUrl = foundProduct.PurchaseUrls
-				.Where(productPurchaseUrl => productPurchaseUrl.Url == purchaseUrl.ToString());
-
-			// remove the matching product images
-			_bagsContext.ProductPurchaseUrls.RemoveRange(foundProductPurchaseUrl);
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.NoContent();

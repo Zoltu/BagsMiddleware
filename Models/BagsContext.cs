@@ -9,7 +9,6 @@ namespace Zoltu.BagsMiddleware.Models
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<TagCategory> TagCategories { get; set; }
 		public DbSet<ProductTag> ProductTags { get; set; }
-		public DbSet<ProductImageUrl> ProductImageUrls { get; set; }
 		public DbSet<ProductPurchaseUrl> ProductPurchaseUrls { get; set; }
 
 		public BagsContext(DbContextOptions<BagsContext> options) : base(options) { }
