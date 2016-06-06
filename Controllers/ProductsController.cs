@@ -253,7 +253,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 		public class AddTagRequest
 		{
 			[JsonProperty(Required = Required.Always, PropertyName = "tag_id")]
-			public Guid TagId { get; set; }
+			public IEnumerable<Guid> TagIds { get; set; }
 		}
 
 		[HttpPut]
@@ -272,17 +272,22 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			if (foundProduct == null)
 				return HttpResult.NotFound($"{productId}");
 
-			// validate tag
-			var foundTag = await _bagsContext.Tags
+			// validate tags
+			var foundTags = await _bagsContext.Tags
 				.WithSafeIncludes()
-				.Where(tag => tag.Id == request.TagId)
-				.SingleOrDefaultAsync();
-			if (foundTag == null)
-				return HttpResult.NotFound($"{request.TagId}");
+				.Where(tag => request.TagIds.Contains(tag.Id))
+				.ToListAsync();
+			foreach (var expectedTagId in request.TagIds)
+				if (!foundTags.Any(foundTag => foundTag.Id == expectedTagId))
+					return HttpResult.NotFound($"{expectedTagId}");
 
 			// link tag and product
-			var productTag = new Models.ProductTag { Product = foundProduct, Tag = foundTag };
-			_bagsContext.ProductTags.Add(productTag);
+			var preexistingTags = foundProduct.Tags.Select(productTag => productTag.Tag).ToList();
+			var productTags = foundTags
+				.Where(foundTag => !preexistingTags.Contains(foundTag))
+				.Select(foundTag => new Models.ProductTag { Product = foundProduct, Tag = foundTag })
+				.ToList();
+			_bagsContext.ProductTags.AddRange(productTags);
 			await _bagsContext.SaveChangesAsync();
 
 			return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
