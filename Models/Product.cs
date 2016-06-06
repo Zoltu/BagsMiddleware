@@ -22,7 +22,6 @@ namespace Zoltu.BagsMiddleware.Models
 
 		// JSON serialized IEnumerable<Image>
 		public String ImagesJson { get; set; }
-		public List<ProductPurchaseUrl> PurchaseUrls { get; set; } = new List<ProductPurchaseUrl>();
 		public List<ProductTag> Tags { get; set; } = new List<ProductTag>();
 
 		public class Image

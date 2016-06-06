@@ -171,9 +171,13 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			var affiliateLink = _amazon.CreateAssociateLink(request.Asin);
 
 			// create product
-			var newProduct = new Models.Product { Name = title, Price = Convert.ToInt64(lowestNewPrice), Asin = request.Asin, ImagesJson = JsonConvert.SerializeObject(images) };
-			var newPurchaseUrl = new Models.ProductPurchaseUrl { Product = newProduct, Url = affiliateLink };
-			newProduct.PurchaseUrls.Add(newPurchaseUrl);
+			var newProduct = new Models.Product
+			{
+				Name = title,
+				Price = Convert.ToInt64(lowestNewPrice),
+				Asin = request.Asin,
+				ImagesJson = JsonConvert.SerializeObject(images)
+			};
 			_bagsContext.Products.Add(newProduct);
 			await _bagsContext.SaveChangesAsync();
 

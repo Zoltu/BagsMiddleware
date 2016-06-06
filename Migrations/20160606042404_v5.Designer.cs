@@ -8,9 +8,10 @@ using Zoltu.BagsMiddleware.Models;
 namespace BagsMiddleware.Migrations
 {
     [DbContext(typeof(BagsContext))]
-    partial class BagsContextModelSnapshot : ModelSnapshot
+    [Migration("20160606042404_v5")]
+    partial class v5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rc2-20901")
