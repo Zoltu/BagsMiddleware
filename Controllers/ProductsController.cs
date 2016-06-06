@@ -252,7 +252,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 		public class AddTagRequest
 		{
-			[JsonProperty(Required = Required.Always, PropertyName = "tag_id")]
+			[JsonProperty(Required = Required.Always, PropertyName = "tag_ids")]
 			public IEnumerable<Guid> TagIds { get; set; }
 		}
 
