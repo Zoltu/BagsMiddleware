@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using BagsMiddleware.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -143,6 +144,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Elements(ns + "ImageSets")
 				.Single()
 				.Elements(ns + "ImageSet")
+				.DistinctBy(imageSet => imageSet.Elements(ns + "LargeImage").Single().Elements(ns + "URL").Single().Value)
 				.Select(imageSet => new Product.Image
 				{
 					Priority = (imageSet.Attribute("Category")?.Value == "primary") ? 10U : 100U,
