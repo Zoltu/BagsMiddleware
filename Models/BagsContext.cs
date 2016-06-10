@@ -28,6 +28,10 @@ namespace Zoltu.BagsMiddleware.Models
 			modelBuilder.Entity<ProductTag>()
 				.HasIndex(productTag => new { productTag.TagId, productTag.ProductId })
 				.IsUnique(true);
+
+			modelBuilder.Entity<Product>()
+				.HasIndex(product => product.Asin)
+				.IsUnique(true);
 		}
 	}
 }

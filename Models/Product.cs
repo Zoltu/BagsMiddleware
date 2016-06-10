@@ -18,9 +18,11 @@ namespace Zoltu.BagsMiddleware.Models
 		public String Name { get; set; }
 		[Required]
 		public Int64 Price { get; set; }
+		[Required]
 		public String Asin { get; set; }
 
 		// JSON serialized IEnumerable<Image>
+		[Required]
 		public String ImagesJson { get; set; }
 		public List<ProductTag> Tags { get; set; } = new List<ProductTag>();
 
