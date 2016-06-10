@@ -22,7 +22,9 @@ namespace BagsMiddleware.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Asin")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasAnnotation("MaxLength", 450);
 
                     b.Property<string>("ImagesJson")
                         .IsRequired();

@@ -8,6 +8,12 @@ namespace BagsMiddleware.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Asin",
+                table: "Products",
+                type: "nvarchar(450)",
+                nullable: false);
+
             migrationBuilder.CreateIndex(
                 name: "IX_Products_Asin",
                 table: "Products",
@@ -20,6 +26,12 @@ namespace BagsMiddleware.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Products_Asin",
                 table: "Products");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Asin",
+                table: "Products",
+                type: "nvarchar(450)",
+                nullable: false);
         }
     }
 }

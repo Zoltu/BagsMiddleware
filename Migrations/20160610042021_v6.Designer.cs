@@ -8,7 +8,7 @@ using Zoltu.BagsMiddleware.Models;
 namespace BagsMiddleware.Migrations
 {
     [DbContext(typeof(BagsContext))]
-    [Migration("20160610040611_v6")]
+    [Migration("20160610042021_v6")]
     partial class v6
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,9 @@ namespace BagsMiddleware.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Asin")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ImagesJson")
                         .IsRequired();

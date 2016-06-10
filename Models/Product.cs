@@ -18,7 +18,7 @@ namespace Zoltu.BagsMiddleware.Models
 		public String Name { get; set; }
 		[Required]
 		public Int64 Price { get; set; }
-		[Required]
+		[Required, MaxLength(450)]
 		public String Asin { get; set; }
 
 		// JSON serialized IEnumerable<Image>
