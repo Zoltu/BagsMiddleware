@@ -136,7 +136,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 				.Where(product => product.Asin == request.Asin)
 				.FirstOrDefaultAsync();
 			if (foundProduct != null)
-				HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
+				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
 
 			var result = await _amazon.GetProductDetailsXml(request.Asin);
 			var xElement = XElement.Parse(result);
