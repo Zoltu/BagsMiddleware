@@ -131,6 +131,13 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 			if (!ModelState.IsValid)
 				return HttpResult.BadRequest(ModelState);
 
+			// see if the product already exists
+			var foundProduct = await _bagsContext.Products
+				.Where(product => product.Asin == request.Asin)
+				.FirstOrDefaultAsync();
+			if (foundProduct != null)
+				HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
+
 			var result = await _amazon.GetProductDetailsXml(request.Asin);
 			var xElement = XElement.Parse(result);
 			XNamespace ns = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
