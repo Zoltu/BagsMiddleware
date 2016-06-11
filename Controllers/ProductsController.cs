@@ -135,6 +135,7 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 			// see if the product already exists
 			var foundProduct = await _bagsContext.Products
+				.WithUnsafeIncludes()
 				.Where(product => product.Asin == request.Asin)
 				.FirstOrDefaultAsync();
 			if (foundProduct != null)
