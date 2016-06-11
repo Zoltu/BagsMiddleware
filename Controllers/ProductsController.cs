@@ -68,7 +68,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 		[HttpGet]
 		[Route("by_tags")]
-		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10)
+		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10, [FromQuery(Name = "min_price")] UInt32 minPrice = 0, [FromQuery(Name = "max_price")] UInt32 maxPrice = Int32.MaxValue)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -95,12 +95,14 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 			// FIXME: typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
 			Int32 startingId32 = startingId;
+			Int32 minPrice64 = (Int32)Math.Min(minPrice, Int32.MaxValue);
+			Int32 maxPrice64 = (Int32)Math.Min(maxPrice, Int32.MaxValue);
 
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
 				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
-				.Where(product => product.Id >= startingId32)
+				.Where(product => product.Id >= startingId32 && product.Price >= minPrice && product.Price <= maxPrice)
 				.Take(itemsPerPage)
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
