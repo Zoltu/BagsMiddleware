@@ -95,14 +95,14 @@ SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Pric
 
 			// FIXME: typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
 			Int32 startingId32 = startingId;
-			Int32 minPrice64 = (Int32)Math.Min(minPrice, Int32.MaxValue);
-			Int32 maxPrice64 = (Int32)Math.Min(maxPrice, Int32.MaxValue);
+			Int32 minPriceSigned = (Int32)Math.Min(minPrice, Int32.MaxValue);
+			Int32 maxPriceSigned = (Int32)Math.Min(maxPrice, Int32.MaxValue);
 
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
 				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
-				.Where(product => product.Id >= startingId32 && product.Price >= minPrice && product.Price <= maxPrice)
+				.Where(product => product.Id >= startingId32 && product.Price >= minPriceSigned && product.Price <= maxPriceSigned)
 				.Take(itemsPerPage)
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
