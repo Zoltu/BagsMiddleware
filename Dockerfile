@@ -1,4 +1,4 @@
-FROM microsoft/dotnet
+FROM zoltu/aspnetcore
 
 COPY . /app
 WORKDIR /app
