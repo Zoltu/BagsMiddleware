@@ -107,6 +107,7 @@ namespace Zoltu.BagsMiddleware
 			.UseContentRoot(Directory.GetCurrentDirectory())
 			.UseIISIntegration()
 			.UseStartup<Startup>()
+			.UseUrls("http://*:80")
 			.Build()
 			.Run();
 	}
