@@ -105,9 +105,9 @@ namespace Zoltu.BagsMiddleware
 		public static void Main(string[] args) => new WebHostBuilder()
 			.UseKestrel()
 			.UseContentRoot(Directory.GetCurrentDirectory())
+			.UseUrls("http://+:80")
 			.UseIISIntegration()
 			.UseStartup<Startup>()
-			.UseUrls("http://*:80")
 			.Build()
 			.Run();
 	}
