@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using BagsMiddleware.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		[Route("{product_id:int}")]
 		public async Task<IActionResult> GetProduct([FromRoute(Name = "product_id")] Int32 productId)
 		{
@@ -69,6 +71,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		[Route("by_tags")]
 		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10, [FromQuery(Name = "min_price")] UInt32 minPrice = 0, [FromQuery(Name = "max_price")] UInt32 maxPrice = Int32.MaxValue)
 		{

@@ -11,6 +11,14 @@ using BagsMiddleware.Extensions;
 using BagsMiddleware.Monitoring;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.Swagger.Model;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Zoltu.BagsMiddleware
 {
@@ -43,9 +51,18 @@ namespace Zoltu.BagsMiddleware
 			// MVC setup
 			services.AddMvc(options =>
 			{
+				var editorsJson = _configuration["Permission:Editor:GoogleUserIds"];
+				var editorsEnumerable = JsonConvert.DeserializeObject<IEnumerable<String>>(editorsJson);
+				var editors = new HashSet<String>(editorsEnumerable);
+				var editorsOnlyPolicy = new AuthorizationPolicyBuilder()
+					.RequireAuthenticatedUser()
+					.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+					.RequireClaim(ClaimTypes.NameIdentifier, editors)
+					.Build();
 				options.ReturnHttpNotAcceptable = true;
 				options.RespectBrowserAcceptHeader = true;
 				options.OutputFormatters.RemoveType<StringOutputFormatter>();
+				options.Filters.Add(new AuthorizeFilter(editorsOnlyPolicy));
 			});
 
 			// Swashbuckle setup
@@ -75,6 +92,18 @@ namespace Zoltu.BagsMiddleware
 			applicationBuilder.UseApplicationInsightsRequestTelemetry();
 			applicationBuilder.UseApplicationInsightsExceptionTelemetry();
 			applicationBuilder.UseApplicationInsightsInitializer(new RequestHeaderTelemetryInitializer(applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>()));
+
+			// TODO: wrap this up into its own middleware class
+			applicationBuilder.UseJwtBearerAuthentication(new JwtBearerOptions
+			{
+				// only authenticate if claims are required for a particular endpoint, public endpoints should work even with an invalid (e.g., expired) token
+				AutomaticAuthenticate = false,
+				AutomaticChallenge = true,
+				Authority = "https://accounts.google.com",
+				Audience = _configuration["Authentication:Google:ClientId"],
+				TokenValidationParameters = new TokenValidationParameters { ValidIssuer = "accounts.google.com" }
+			});
+
 			applicationBuilder.UseMvc();
 
 			applicationBuilder.UseSwagger();

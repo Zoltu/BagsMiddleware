@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -20,6 +21,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		[Route("")]
 		public async Task<IActionResult> GetCategories()
 		{
@@ -30,6 +32,7 @@ namespace Zoltu.BagsMiddleware.Controllers
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		[Route("{category_id:guid}")]
 		public async Task<IActionResult> GetCategory([FromRoute(Name = "category_id")] Guid categoryId)
 		{
