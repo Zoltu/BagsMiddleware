@@ -23,11 +23,13 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("")]
 		public async Task<IActionResult> GetTags()
 		{
-			return HttpResult.Ok(await _bagsContext.Tags
+			var tags = await _bagsContext.Tags
 				.WithSafeIncludes()
-				.AsAsyncEnumerable()
+				.ToListAsync();
+			var serializableTags = tags
 				.Select(tag => tag.ToSafeExpandedWireFormat())
-				.ToList());
+				.ToList();
+			return HttpResult.Ok(serializableTags);
 		}
 
 		[HttpGet]

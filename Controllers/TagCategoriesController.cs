@@ -23,8 +23,8 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("")]
 		public async Task<IActionResult> GetCategories()
 		{
-			return HttpResult.Ok(await _bagsContext.TagCategories
-				.AsAsyncEnumerable()
+			var categories = await _bagsContext.TagCategories.ToListAsync();
+			return HttpResult.Ok(categories
 				.Select(category => category.ToBaseWireFormat())
 				.ToList());
 		}

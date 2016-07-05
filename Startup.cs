@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.SwaggerGen.Generator;
 using System.IO;
 using BagsMiddleware.Extensions;
 using BagsMiddleware.Monitoring;
 using Microsoft.AspNetCore.Http;
+using Swashbuckle.Swagger.Model;
 
 namespace Zoltu.BagsMiddleware
 {
@@ -43,8 +43,8 @@ namespace Zoltu.BagsMiddleware
 			// MVC setup
 			services.AddMvc(options =>
 			{
+				options.ReturnHttpNotAcceptable = true;
 				options.RespectBrowserAcceptHeader = true;
-				options.OutputFormatters.Insert(0, new HttpNotAcceptableOutputFormatter());
 				options.OutputFormatters.RemoveType<StringOutputFormatter>();
 			});
 
@@ -77,7 +77,7 @@ namespace Zoltu.BagsMiddleware
 			applicationBuilder.UseApplicationInsightsInitializer(new RequestHeaderTelemetryInitializer(applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>()));
 			applicationBuilder.UseMvc();
 
-			applicationBuilder.UseSwaggerGen();
+			applicationBuilder.UseSwagger();
 			applicationBuilder.UseSwaggerUi();
 
 			// NOTE: this must go at the end of Configure; change when https://github.com/aspnet/Hosting/issues/373 is resolved
@@ -106,7 +106,6 @@ namespace Zoltu.BagsMiddleware
 			.UseKestrel()
 			.UseContentRoot(Directory.GetCurrentDirectory())
 			.UseUrls("http://+:80")
-			.UseIISIntegration()
 			.UseStartup<Startup>()
 			.Build()
 			.Run();

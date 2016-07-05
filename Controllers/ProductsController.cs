@@ -40,11 +40,13 @@ namespace Zoltu.BagsMiddleware.Controllers
 		[Route("")]
 		public async Task<IActionResult> GetProducts()
 		{
-			return HttpResult.Ok(await _bagsContext.Products
+			var products = await _bagsContext.Products
 				.WithUnsafeIncludes()
-				.AsAsyncEnumerable()
+				.ToListAsync();
+			var serializableProducts = products
 				.Select(product => product.ToUnsafeExpandedWireFormat(_amazon))
-				.ToList());
+				.ToList();
+			return HttpResult.Ok(serializableProducts);
 		}
 
 		[HttpGet]
