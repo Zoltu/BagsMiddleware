@@ -81,34 +81,33 @@ namespace Zoltu.BagsMiddleware.Controllers
 
 			var tagIdsList = tagIds.ToList();
 
-			var query = @"
-SELECT DISTINCT products.Id as Id, products.Name as Name, products.Price as Price, products.ImagesJson as ImagesJson, products.Asin as Asin
-	FROM ProductTags productTags0
-	";
-			query += String.Join("\r\n	", tagIds
-				.Select((guid, i) => new { guid, i })
-				.Skip(1)
-				.Select(item => $"JOIN ProductTags productTags{item.i} ON productTags0.ProductId = productTags{item.i}.ProductId"));
-			query += @"
-	INNER JOIN Products products ON productTags0.ProductId = products.Id
-	";
-			if (tagIds.Count() != 0)
-				query += "WHERE ";
-			query += String.Join("\r\n		AND ", tagIds
-				.Select((guid, i) => new { guid, i })
-				.Select(item => $"productTags{item.i}.TagId = @p{item.i}"));
-
 			// FIXME: typecast necessary until https://github.com/aspnet/EntityFramework/issues/5663 is fixed
 			Int32 startingId32 = startingId;
 			Int32 minPriceSigned = (Int32)Math.Min(minPrice, Int32.MaxValue);
 			Int32 maxPriceSigned = (Int32)Math.Min(maxPrice, Int32.MaxValue);
+			UInt32 count = (UInt32)Math.Max(0, tagIdsList.Count);
+
+			var query = $@"
+SELECT DISTINCT TOP({itemsPerPage}) products.Id as Id, products.Name as Name, products.Price as Price, products.ImagesJson as ImagesJson, products.Asin as Asin
+FROM Products products";
+			if (count > 0)
+			{
+				query += @"
+	INNER JOIN (
+		SELECT ProductId
+		FROM ProductTags
+		WHERE TagId IN (" + String.Join(", ", tagIds.Select((guid, i) => $"@p{i}")) + $@")
+		GROUP BY ProductId 
+		HAVING COUNT(*) = {count}
+	) AS tags ON tags.ProductId = products.Id";
+			}
+			query += $@"
+WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.Id >= {startingId}";
 
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
 				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
-				.Where(product => product.Id >= startingId32 && product.Price >= minPriceSigned && product.Price <= maxPriceSigned)
-				.Take(itemsPerPage)
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
 				.Select(product => product.ToUnsafeExpandedWireFormat(_amazon))
