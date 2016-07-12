@@ -228,10 +228,6 @@ WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.
 			if (foundProduct == null)
 				return HttpResult.NotFound($"{productId}");
 
-			// verify there are changes
-			if (foundProduct.Name == request.Name && foundProduct.Price == request.Price)
-				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
-
 			// update the product
 			foundProduct.Name = request.Name;
 			foundProduct.Price = request.Price;
