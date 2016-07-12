@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Zoltu.BagsMiddleware.Models
 {
 	public class ProductTag
-    {
+	{
 		[Key]
 		public Guid Id { get; set; }
 
@@ -16,9 +16,9 @@ namespace Zoltu.BagsMiddleware.Models
 		[Required]
 		public Int32 ProductId { get; set; }
 		public Product Product { get; set; }
-    }
+	}
 
-	public static class  ProductTagExtensions
+	public static class ProductTagExtensions
 	{
 		public static IQueryable<ProductTag> WithTagIncludes(this IQueryable<ProductTag> query)
 		{
