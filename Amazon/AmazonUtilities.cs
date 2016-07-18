@@ -37,5 +37,14 @@ namespace Zoltu.BagsMiddleware.Amazon
 			var httpClient = new HttpClient();
 			return await httpClient.GetStringAsync(amazonRequestUri);
 		}
+
+		public String ConvertImageLinkToHttps(String source)
+		{
+			var uriBuilder = new UriBuilder(source);
+			uriBuilder.Scheme = "https";
+			uriBuilder.Host = "images-na.ssl-images-amazon.com";
+			uriBuilder.Port = -1;
+			return uriBuilder.ToString();
+		}
 	}
 }

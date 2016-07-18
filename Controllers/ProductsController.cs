@@ -162,9 +162,9 @@ WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.
 				.Select(imageSet => new Product.Image
 				{
 					Priority = (imageSet.Attribute("Category")?.Value == "primary") ? 10U : 100U,
-					Small = imageSet.Elements(ns + "SmallImage").Single().Elements(ns + "URL").Single().Value,
-					Medium = imageSet.Elements(ns + "MediumImage").Single().Elements(ns + "URL").Single().Value,
-					Large = imageSet.Elements(ns + "LargeImage").Single().Elements(ns + "URL").Single().Value
+					Small = _amazon.ConvertImageLinkToHttps(imageSet.Elements(ns + "SmallImage").Single().Elements(ns + "URL").Single().Value),
+					Medium = _amazon.ConvertImageLinkToHttps(imageSet.Elements(ns + "MediumImage").Single().Elements(ns + "URL").Single().Value),
+					Large = _amazon.ConvertImageLinkToHttps(imageSet.Elements(ns + "LargeImage").Single().Elements(ns + "URL").Single().Value)
 				})
 				.OrderBy(image => image.Priority);
 
