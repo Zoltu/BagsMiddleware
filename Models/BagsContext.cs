@@ -29,6 +29,10 @@ namespace Zoltu.BagsMiddleware.Models
 				.HasIndex(productTag => new { productTag.TagId, productTag.ProductId })
 				.IsUnique(true);
 
+			// index that includes the ID (recommended by Azure); the advantage of this is that the index will contain all of the columns necessary for some queries so the table won't have to be queried at all
+			modelBuilder.Entity<ProductTag>()
+				.HasIndex(productTag => new { productTag.ProductId, productTag.Id });
+
 			modelBuilder.Entity<Product>()
 				.HasIndex(product => product.Asin)
 				.IsUnique(true);
