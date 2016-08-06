@@ -2,14 +2,14 @@
 /**********************************************************************************************
  * Copyright 2009 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file 
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  *       http://aws.amazon.com/apache2.0/
  *
  * or in the "LICENSE.txt" file accompanying this file. This file is distributed on an "AS IS"
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under the License. 
+ * License for the specific language governing permissions and limitations under the License.
  *
  * ********************************************************************************************
  *
@@ -26,7 +26,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Net;
 
-namespace Zoltu.BagsMiddleware.Amazon
+namespace Zoltu.Bags.Api.Amazon
 {
 	public class RequestSigner
 	{
@@ -41,7 +41,7 @@ namespace Zoltu.BagsMiddleware.Amazon
 		/*
 		* Use this constructor to create the object. The AWS credentials are available on
 		* http://aws.amazon.com
-		* 
+		*
 		* The destination is the service end-point for your application:
 		*  US: ecs.amazonaws.com
 		*  JP: ecs.amazonaws.jp
@@ -60,7 +60,7 @@ namespace Zoltu.BagsMiddleware.Amazon
 
 		/*
 		* Sign a request in the form of a Dictionary of name-value pairs.
-		* 
+		*
 		* This method returns a complete URL to use. Modifying the returned URL
 		* in any way invalidates the signature and Amazon will reject the requests.
 		*/
@@ -110,7 +110,7 @@ namespace Zoltu.BagsMiddleware.Amazon
 
 		/*
 		* Sign a request in the form of a query string.
-		* 
+		*
 		* This method returns a complete URL to use. Modifying the returned URL
 		* in any way invalidates the signature and Amazon will reject the requests.
 		*/
@@ -132,7 +132,7 @@ namespace Zoltu.BagsMiddleware.Amazon
 
 		/*
 		* Percent-encode (URL Encode) according to RFC 3986 as required by Amazon.
-		* 
+		*
 		* This is necessary because .NET's HttpUtility.UrlEncode does not encode
 		* according to the above standard. Also, .NET returns lower-case encoding
 		* by default and Amazon requires upper-case encoding.

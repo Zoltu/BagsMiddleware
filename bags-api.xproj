@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>0032a312-2914-4957-ae1a-9e849e5a049c</ProjectGuid>
-    <RootNamespace>BagsMiddleware</RootNamespace>
+    <RootNamespace>Zoltu.Bags.Api</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>

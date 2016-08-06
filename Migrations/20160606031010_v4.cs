@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BagsMiddleware.Migrations
+namespace Zoltu.Bags.Api.Migrations
 {
 	public partial class v4 : Migration
 	{

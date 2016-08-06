@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BagsMiddleware.Migrations
+namespace Zoltu.Bags.Api.Migrations
 {
-	public partial class v2 : Migration
+    public partial class v2 : Migration
 	{
 		protected override void Up(MigrationBuilder migrationBuilder)
 		{

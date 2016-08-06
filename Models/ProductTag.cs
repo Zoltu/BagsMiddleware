@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace Zoltu.BagsMiddleware.Models
+namespace Zoltu.Bags.Api.Models
 {
 	public class ProductTag
 	{

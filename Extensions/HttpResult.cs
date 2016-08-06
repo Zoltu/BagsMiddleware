@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Zoltu.BagsMiddleware.Extensions
+namespace Zoltu.Bags.Api.Extensions
 {
 	public static class HttpResult
 	{

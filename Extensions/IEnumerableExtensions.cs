@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BagsMiddleware.Extensions
+namespace Zoltu.Bags.Api.Extensions
 {
 	public static class IEnumerableExtensions
 	{

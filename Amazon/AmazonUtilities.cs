@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Zoltu.BagsMiddleware.Amazon
+namespace Zoltu.Bags.Api.Amazon
 {
 	public class AmazonUtilities
 	{

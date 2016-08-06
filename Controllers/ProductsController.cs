@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using BagsMiddleware.Extensions;
+using Zoltu.Bags.Api.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Zoltu.BagsMiddleware.Amazon;
-using Zoltu.BagsMiddleware.Extensions;
-using Zoltu.BagsMiddleware.Models;
+using Zoltu.Bags.Api.Amazon;
+using Zoltu.Bags.Api.Models;
 
-namespace Zoltu.BagsMiddleware.Controllers
+namespace Zoltu.Bags.Api.Controllers
 {
-	[Route("api/products")]
+    [Route("api/products")]
 	public class ProductsController : Controller
-    {
+	{
 		private BagsContext _bagsContext;
 		private AmazonUtilities _amazon;
 
@@ -97,7 +96,7 @@ FROM Products products";
 		SELECT ProductId
 		FROM ProductTags
 		WHERE TagId IN (" + String.Join(", ", tagIds.Select((guid, i) => $"@p{i}")) + $@")
-		GROUP BY ProductId 
+		GROUP BY ProductId
 		HAVING COUNT(*) = {count}
 	) AS tags ON tags.ProductId = products.Id";
 			}

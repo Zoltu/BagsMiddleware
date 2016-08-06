@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace Zoltu.BagsMiddleware.Models
+namespace Zoltu.Bags.Api.Models
 {
-	public class BagsContext : DbContext
-    {
+    public class BagsContext : DbContext
+	{
 		public DbSet<Product> Products { get; set; }
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<TagCategory> TagCategories { get; set; }

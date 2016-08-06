@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Zoltu.BagsMiddleware.Extensions;
-using Zoltu.BagsMiddleware.Models;
+using Zoltu.Bags.Api.Extensions;
+using Zoltu.Bags.Api.Models;
 
-namespace Zoltu.BagsMiddleware.Controllers
+namespace Zoltu.Bags.Api.Controllers
 {
 	[Route("api/tag_categories")]
 	public class TagCategoriesController : Controller

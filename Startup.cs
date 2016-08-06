@@ -7,8 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using BagsMiddleware.Extensions;
-using BagsMiddleware.Monitoring;
+using Zoltu.Bags.Api.Extensions;
+using Zoltu.Bags.Api.Monitoring;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.Swagger.Model;
 using Microsoft.IdentityModel.Tokens;
@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Zoltu.BagsMiddleware
+namespace Zoltu.Bags.Api
 {
 	public class Startup
 	{
@@ -68,7 +68,7 @@ namespace Zoltu.BagsMiddleware
 			// Swashbuckle setup
 			services.AddSwaggerGen(options =>
 			{
-				options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.BagsMiddleware" });
+				options.SingleApiVersion(new Info { Version = "v1", Title = "Zoltu.Bags.Api" });
 				options.DescribeAllEnumsAsStrings();
 			});
 

@@ -42,7 +42,7 @@
 		"postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
 	},
 	"tooling": {
-		"defaultNamespace": "Zoltu.BagsMiddleware"
+		"defaultNamespace": "Zoltu.Bags.Api"
 	},
 	"tools": {
 		"Microsoft.EntityFrameworkCore.Tools": {
@@ -50,5 +50,5 @@
 			"imports": "net451"
 		}
 	},
-	"userSecretsId": "Zoltu.BagsMiddleware"
+	"userSecretsId": "bags-api"
 }

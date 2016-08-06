@@ -5,7 +5,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 
-namespace BagsMiddleware.Monitoring
+namespace Zoltu.Bags.Api.Monitoring
 {
 	public class RequestHeaderTelemetryInitializer : ITelemetryInitializer
 	{

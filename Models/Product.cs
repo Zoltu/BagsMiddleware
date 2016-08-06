@@ -5,9 +5,9 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Zoltu.BagsMiddleware.Amazon;
+using Zoltu.Bags.Api.Amazon;
 
-namespace Zoltu.BagsMiddleware.Models
+namespace Zoltu.Bags.Api.Models
 {
 	public class Product
 	{
