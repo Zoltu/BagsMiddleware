@@ -8,6 +8,7 @@ namespace Zoltu.Bags.Api.Models
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<TagCategory> TagCategories { get; set; }
 		public DbSet<ProductTag> ProductTags { get; set; }
+		public DbSet<AmazonProduct> AmazonProducts { get; set; }
 
 		public BagsContext(DbContextOptions<BagsContext> options) : base(options) { }
 
@@ -35,6 +36,10 @@ namespace Zoltu.Bags.Api.Models
 			modelBuilder.Entity<Product>()
 				.HasIndex(product => product.Asin)
 				.IsUnique(true);
+
+			// unique constraint on ASIN
+			modelBuilder.Entity<AmazonProduct>()
+				.HasAlternateKey(amazonProduct => amazonProduct.Asin);
 		}
 	}
 }

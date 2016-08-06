@@ -25,6 +25,7 @@ namespace Zoltu.Bags.Api.Models
 		[Required]
 		public String ImagesJson { get; set; }
 		public List<ProductTag> Tags { get; set; } = new List<ProductTag>();
+		public AmazonProduct AmazonProduct { get; set; }
 
 		public class Image
 		{
@@ -67,7 +68,8 @@ namespace Zoltu.Bags.Api.Models
 	{
 		public static IQueryable<Product> WithSafeIncludes(this IQueryable<Product> query)
 		{
-			return query;
+			return query
+				.Include(product => product.AmazonProduct);
 		}
 
 		public static IQueryable<Product> WithUnsafeIncludes(this IQueryable<Product> query)
