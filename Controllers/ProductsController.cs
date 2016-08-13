@@ -88,7 +88,8 @@ namespace Zoltu.Bags.Api.Controllers
 
 			var query = $@"
 SELECT DISTINCT TOP({itemsPerPage}) products.Id as Id, products.Name as Name, products.Price as Price, products.ImagesJson as ImagesJson, products.Asin as Asin
-FROM Products products";
+FROM Products products
+LEFT OUTER JOIN AmazonProducts amazonProducts ON products.Id = amazonProducts.ProductId";
 			if (count > 0)
 			{
 				query += @"
@@ -101,7 +102,7 @@ FROM Products products";
 	) AS tags ON tags.ProductId = products.Id";
 			}
 			query += $@"
-WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.Id >= {startingId}";
+WHERE amazonProducts.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.Id >= {startingId} AND amazonProducts.Available = 1";
 
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
@@ -139,7 +140,7 @@ WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.
 			// see if the product already exists
 			var foundProduct = await _bagsContext.Products
 				.WithUnsafeIncludes()
-				.Where(product => product.Asin == request.Asin)
+				.Where(product => product.AmazonProduct.Asin == request.Asin)
 				.FirstOrDefaultAsync();
 			if (foundProduct != null)
 				return HttpResult.Ok(foundProduct.ToUnsafeExpandedWireFormat(_amazon));
@@ -183,14 +184,13 @@ WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.
 				.Single()
 				.Value;
 
-			var affiliateLink = _amazon.CreateAssociateLink(request.Asin);
-
 			// create product
 			var newProduct = new Models.Product
 			{
 				Name = title,
 				Price = Convert.ToInt64(lowestNewPrice),
 				Asin = request.Asin,
+				AmazonProduct = new AmazonProduct { Asin = request.Asin, Available = true, LastChecked = DateTimeOffset.UtcNow, Price = Convert.ToInt32(lowestNewPrice) },
 				ImagesJson = JsonConvert.SerializeObject(images)
 			};
 			_bagsContext.Products.Add(newProduct);
@@ -229,9 +229,6 @@ WHERE products.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND products.
 
 			// update the product
 			foundProduct.Name = request.Name;
-			foundProduct.Price = request.Price;
-			if (request.Asin != null)
-				foundProduct.Asin = request.Asin;
 			if (request.Images != null)
 				foundProduct.ImagesJson = JsonConvert.SerializeObject(request.Images);
 			await _bagsContext.SaveChangesAsync();

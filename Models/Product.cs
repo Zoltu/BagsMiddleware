@@ -44,7 +44,7 @@ namespace Zoltu.Bags.Api.Models
 			dynamic result = new ExpandoObject();
 			result.id = Id;
 			result.name = Name;
-			result.price = Price;
+			result.price = AmazonProduct.Price;
 			return result;
 		}
 
@@ -52,7 +52,7 @@ namespace Zoltu.Bags.Api.Models
 		{
 			var result = ToBaseWireFormat();
 			result.images = JsonConvert.DeserializeObject<IEnumerable<Image>>(ImagesJson ?? "[]");
-			result.purchase_urls = new[] { amazon.CreateAssociateLink(Asin) };
+			result.purchase_urls = new[] { amazon.CreateAssociateLink(AmazonProduct.Asin) };
 			return result;
 		}
 

@@ -1,24 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.IO;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Swashbuckle.Swagger.Model;
 using Zoltu.Bags.Api.Extensions;
 using Zoltu.Bags.Api.Monitoring;
-using Microsoft.AspNetCore.Http;
-using Swashbuckle.Swagger.Model;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Collections.Generic;
-using System;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Zoltu.Bags.Api
 {
