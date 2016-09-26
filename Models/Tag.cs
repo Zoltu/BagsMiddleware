@@ -10,7 +10,7 @@ namespace Zoltu.Bags.Api.Models
 	public class Tag
 	{
 		[Key]
-		public Guid Id { get; set; }
+		public Int32 Id { get; set; }
 
 		[Required]
 		public String Name { get; set; }

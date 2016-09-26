@@ -72,7 +72,7 @@ namespace Zoltu.Bags.Api.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("by_tags")]
-		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Guid> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10, [FromQuery(Name = "min_price")] UInt32 minPrice = 0, [FromQuery(Name = "max_price")] UInt32 maxPrice = Int32.MaxValue)
+		public async Task<IActionResult> GetProductsByTags([FromQuery(Name = "tag_id")] IEnumerable<Int32> tagIds, [FromQuery(Name = "starting_product_id")] UInt16 startingId = 0, [FromQuery(Name = "products_per_page")] UInt16 itemsPerPage = 10, [FromQuery(Name = "min_price")] UInt32 minPrice = 0, [FromQuery(Name = "max_price")] UInt32 maxPrice = Int32.MaxValue)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -96,7 +96,7 @@ LEFT OUTER JOIN AmazonProducts amazonProducts ON products.Id = amazonProducts.Pr
 	INNER JOIN (
 		SELECT ProductId
 		FROM ProductTags
-		WHERE TagId IN (" + String.Join(", ", tagIds.Select((guid, i) => $"@p{i}")) + $@")
+		WHERE TagId IN (" + String.Join(", ", tagIds.Select((id, i) => $"@p{i}")) + $@")
 		GROUP BY ProductId
 		HAVING COUNT(*) = {count}
 	) AS tags ON tags.ProductId = products.Id";
@@ -107,7 +107,7 @@ WHERE amazonProducts.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND pro
 			// locate matching products
 			var matchingProducts = _bagsContext.Products
 				.WithUnsafeIncludes()
-				.FromSql(query, tagIds.Select(guid => guid as Object).ToArray())
+				.FromSql(query, tagIds.Select(id => id as Object).ToArray())
 				// FIXME: This should be `ToListAsync` or `AsAsyncEnumerable` https://github.com/aspnet/EntityFramework/issues/5640
 				.ToList()
 				.Select(product => product.ToUnsafeExpandedWireFormat(_amazon))
@@ -261,7 +261,7 @@ WHERE amazonProducts.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND pro
 		public class AddTagRequest
 		{
 			[JsonProperty(Required = Required.Always, PropertyName = "tag_ids")]
-			public IEnumerable<Guid> TagIds { get; set; }
+			public IEnumerable<Int32> TagIds { get; set; }
 		}
 
 		[HttpPut]
@@ -303,7 +303,7 @@ WHERE amazonProducts.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND pro
 
 		[HttpDelete]
 		[Route("{product_id:int}/tag/{tag_id:guid}")]
-		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Int32 productId, [FromRoute(Name = "tag_id")] Guid tagId)
+		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Int32 productId, [FromRoute(Name = "tag_id")] Int32 tagId)
 		{
 			// validate input
 			if (!ModelState.IsValid)

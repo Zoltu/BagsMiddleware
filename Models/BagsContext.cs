@@ -10,7 +10,11 @@ namespace Zoltu.Bags.Api.Models
 		public DbSet<ProductTag> ProductTags { get; set; }
 		public DbSet<AmazonProduct> AmazonProducts { get; set; }
 
-		public BagsContext(DbContextOptions<BagsContext> options) : base(options) { }
+		public BagsContext(DbContextOptions<BagsContext> options) : base(options)
+		{
+			// set to allow migration enough time to execute, this should be reduced once v9 is applied everywhere
+			Database.SetCommandTimeout(150000);
+		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

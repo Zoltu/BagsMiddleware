@@ -37,7 +37,7 @@ namespace Zoltu.Bags.Api.Controllers
 		[HttpGet]
 		[AllowAnonymous]
 		[Route("{tag_id:guid}")]
-		public async Task<IActionResult> GetTag([FromRoute(Name = "tag_id")] Guid tagId)
+		public async Task<IActionResult> GetTag([FromRoute(Name = "tag_id")] Int32 tagId)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -105,7 +105,7 @@ namespace Zoltu.Bags.Api.Controllers
 
 		[HttpPut]
 		[Route("{tag_id:guid}")]
-		public async Task<IActionResult> EditTag([FromRoute(Name = "tag_id")] Guid tagId, [FromBody] EditTagRequest request)
+		public async Task<IActionResult> EditTag([FromRoute(Name = "tag_id")] Int32 tagId, [FromBody] EditTagRequest request)
 		{
 			// validate input
 			if (!ModelState.IsValid)
@@ -148,7 +148,7 @@ namespace Zoltu.Bags.Api.Controllers
 
 		[HttpDelete]
 		[Route("{tag_id:guid}")]
-		public async Task<IActionResult> DeleteTag([FromRoute(Name = "tag_id")] Guid tagId)
+		public async Task<IActionResult> DeleteTag([FromRoute(Name = "tag_id")] Int32 tagId)
 		{
 			// validate input
 			if (!ModelState.IsValid)
