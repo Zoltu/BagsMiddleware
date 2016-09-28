@@ -302,7 +302,7 @@ WHERE amazonProducts.Price BETWEEN {minPriceSigned} AND {maxPriceSigned} AND pro
 		}
 
 		[HttpDelete]
-		[Route("{product_id:int}/tag/{tag_id:guid}")]
+		[Route("{product_id:int}/tag/{tag_id:int}")]
 		public async Task<IActionResult> RemoveTag([FromRoute(Name = "product_id")] Int32 productId, [FromRoute(Name = "tag_id")] Int32 tagId)
 		{
 			// validate input
